@@ -201,6 +201,80 @@
     (assoc grammar 6 "0")))
 
 
+;#8th parameter
+;infL2 = infoList[2]
+(defn setPrepStrand
+  [sentence infL2 grammar]
+  (if (and (in? infL2 "P") (in? infL2 "03"))
+    (def i (.indexOf sentence "P")) ;Get index of P
+    (def j (.indexOf sentence "03")) ;Ge index of 03
+    (if (and (not= i -1) (not= j -1) (not= (abs (- i j)) -1)) ;If they exist, make sure they aren't adjacent
+      (assoc grammar 7 "1"))))
+
+
+;9th parameter
+;infL2 = infoList[2]
+(defn setTopicMark
+  [infL2 grammar]
+  (if (in? infL2 "WA")
+    (assoc grammar 8 "1")))
+
+
+;10th parameter
+;infL2 = infoList[2]
+(defn vToI
+  [sentence infL2 grammar]
+  (if (and (in? infL2 "01") (in? infL2 "Verb"))
+    (do (def i (.indexOf sentence "01"))
+        (def j (.indexOf sentence "Verb"))
+        (if (and (> i 0) (not= j -1) (not= (abs (- i j)) 1))
+          (assoc grammar 9 "1")))))
+
+
+;11th parameter
+(defn iToC
+  [sentence grammar]
+  (def g0 (get grammar 0))
+  (def g1 (get grammar 1))
+  (def g2 (get grammar 2))
+  
+  (if (and (= g0 "0") (= g1 "0") (= g2 "0") (S_Aux sentence))
+    (assoc grammar 10 "0"))
+  (if (and (= g0 "1") (= g1 "1") (= g2 "1") (Aux_S sentence))
+    (assoc grammar 10 "0"))
+  (if (and (= g0 "1") (= g1 "0") (= g2 "1") (Aux_Verb sentence))
+    (assoc grammar 10 "0"))
+  (if (and (= g0 "0") (= g1 "1") (= g2 "0") (Verb_Aux sentence))
+    (assoc grammar 10 "0"))
+  (if (and (= g0 "0") (= g1 "0") (= g2 "1") (S_Aux sentence))
+    (assoc grammar 10 "0"))
+  (if (and (= g0 "1") (= g1 "1") (= g2 "0") (Aux_S sentence))
+    (assoc grammar 10 "0"))
+  (if (and (= g0 "1") (= g1 "0") (= g2 "0") (or (Never_Verb sentence) (hasKa sentence)))
+    (assoc grammar 10 "0"))
+  (if (and (= g0 "0") (= g1 "1") (= g2 "1") (or (Verb_Never sentence) (hasKa sentence)))
+    (assoc grammar 10 "0")))
+
+
+;12th parameter                                                                                                             
+(defn affixHop
+  [sentence infoList  grammar]
+  (def infL1 (get infoList 1))
+  (def infL2 (get infoList 2))
+
+  (if (and (Verb_tensed infL1) (in? infL2 "Never Verb 01"))
+    (assoc grammar 11 "1"))
+  (if (and (Verb_tensed infL1) (> (.indexOf sentence "01") 0) (in? infL2 "01 Verb Never"))
+    (assoc grammar 11 "1")))
+
+  
+;13th parameter
+;infL2 = infoList[2]
+(defn questionInver
+  [infL2 grammar]
+  (if (in? infL2 "ka")
+    (assoc grammar 12 "0")))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defn consumeSentence
   [sen]
