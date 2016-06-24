@@ -8,11 +8,16 @@
   [file]
    (with-open [rdr (clojure.java.io/reader file)] (vec (csv/read-csv rdr :separator \tab))))
 
+;Returns whether the sentences grammar ID
+;matches gID
 (defn isSentenceNeeded
   [x gID]
   (println (get x 0))
   (= gID (get x 0)))
 
+;Iterates through the file containing all sentences
+;and adds sentences with grammar IDs matching gID
+;to a new vector
 (defn chooseSentences
   [file gID]
   (loop [remainingSentences file chosenSentences []]
@@ -27,7 +32,9 @@
 
 
 (defn -main
-  "I don't do a whole lot."
+  "Loads the sentence file contents int to
+  memory and creates a file of selected sentences
+  based on a chosen grammar ID"
   []
   (println "Load file from memory")
   (def allSentences (readFile "tests.txt"))
