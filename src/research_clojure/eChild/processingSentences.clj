@@ -118,6 +118,88 @@
           (assoc grammar 0 "0")))))
 
 
+;2nd parameter
+(defn setHead
+  [sen infoList grammar]
+  (if (and (in? (get infoList 2) "03") (in? (get infoList 2) "P"))
+    (do (def first (.indexOf sen "03"))
+        ;03 followed by P
+        (if (and (> first 0) (= (.indexOf sen "P") (+ first 1)))
+          (assoc grammar 1 "1"))))
+  ;If imperative, make sure Verb directly follow 01
+  (if (and (isImperative (get infoList 1)) (in? (get infoList 2) "01") (in? (get infoList 2) "Verb"))
+    (if (= (.indexOf sen "01") (- (.indexOf sen "Verb") 1))
+      (assoc grammar 1 "1"))))
+    
+
+(defn noHead
+  [sen infoList grammar]
+  (if (and (in? (get infoList 2) "03") (in? (get infoList 2) "P"))
+    (do (def first (.indexOf sen "P"))
+        ;03 followed by P
+        (if (and (> first 0) (= (.indexOf sen "03") (+ first 1)))
+          (assoc grammar 1 "0"))))
+  
+  ;If imperative, make sure Verb directly follows 01
+  (if (and (isImperative (get infoList 1)) (in? (get infoList 2) "01") (in? (get infoList 2) "Verb"))
+    (if (= (.indexOf sen "Verb") (- (.indexOf sen "01") 1))
+      (assoc grammar 1 "0"))))
+
+
+;3rd parameter
+;infL1 must be infoList[1]
+(defn setHeadCP
+  [sen infL1 grammar]
+  (if (isQuestion infL1)
+    (if (or (= (.indexOf sen "ka") (- (count sen) 1)) (and (= (in? sen "ka") false) (= (.indexOf sen "Aux") (- (count sen) 1))))
+      (assoc grammar 2 "1"))))
+
+
+;infL1 must be infoList[1]
+(defn noHeadCP
+  [sen infL1 grammar]
+  (if (isQuestion infL1)
+    (if (or (= (.indexOf sen "ka") 0) (and (= (in? sen "ka") false) (= (.indexOf sen "Aux") 0)))
+      (assoc grammar 2 "0"))))
+   
+
+;4th parameter
+(defn setObligTopic
+  [sen infoList grammar]
+  (if (isDeclarative (get infoList 1))
+    (def infL2 = (get infoList 2))
+    (if (and (in? infL2 "02") (= (in? infL2) false))
+      (do (assoc grammar 5 "1")
+          (if (= (get grammar 3) "1")
+            (assoc grammar 3 "0")))
+      (if (containsTopicalizable sen)
+        (assoc grammar 3 "1")))))
+   
+
+;5th parameter
+;Only works for full, not necessarily with CHILDES distribution
+(defn setNullSubj
+  [sentence infoList grammar]
+  (if (and (isDeclarative (get infoList 1)) (= (in? (get infoList 2) "S") false) (outOblique sentence))
+    (do (assoc grammar 4 "1")
+        (println (get grammar 4)))))
+
+
+;6th parameter
+;infL2 = infoList[2]
+(defn setNullTopic
+  [infL2 grammar]
+  (if (and (in? infL2 "02") (= (in? infL2 "01") false))
+    (assoc grammar 5 "1")))
+
+
+;7th parameter
+;infL2 = infoList[2]
+(defn setWHMovement
+  [sentence infL2 grammar]
+  (if (and (> (.indexOf sen "+WH") 0) (= (in? infL2 "03[+WH]") false))
+    (assoc grammar 6 "0")))
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defn consumeSentence
