@@ -30,18 +30,27 @@
                        (set [sentence]))))))))
 
 
+(defn func2
+  [x]
+  (assoc x 1 "2"))
+
+
 
 (defn -main
   "Loads the sentence file contents int to
   memory and creates a file of selected sentences
   based on a chosen grammar ID"
   []
+  (def x ["2" "1" "0"])
+  (println x)
+  (def y (func2 x))
+  (println y)
+
   (println "Load file from memory")
   (def allSentences (readFile "tests.txt"))
-  ;(println (get (get allSentences 0) 0))
+  (println (get (get allSentences 0) 0))
   (def selectedSentences (chooseSentences allSentences "611"))
   (println (count selectedSentences))
-  (println (get selectedSentences 0))
-  )
+  (println (get selectedSentences 0)))
 
 
