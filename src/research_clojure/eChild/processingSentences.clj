@@ -376,20 +376,20 @@
 (defn setParameters
   "Uses grammar, infolist"
   [infoList grammar expectedGrammar]
-  newGrammar = []
-  (parameter1 grammar infoList)
-  (parameter2 grammar infoList)
-  (parameter3 grammar infoList)
-  (parameter4 grammar infoList)
-  (parameter5 grammar infoList)
-  (parameter6 grammar infoList)
-  (parameter7 grammar infoList)
-  (parameter8 grammar infoList)
-  (parameter9 grammar infoList)
-  (parameter10 grammar infoList)
-  (parameter11 grammar infoList)
-  (parameter12 grammar infoList)
-  (parameter13 grammar infoList)
-  (isGrammarLearned? currentGrammar expectedGrammar))
+  
+  (currentGrammar (parameter1 grammar infoList))
+  (currentGrammar (parameter2 currentGrammar infoList))
+  (currentGrammar (parameter3 currentGrammar infoList))
+  (currentGrammar (parameter4 currentGrammar infoList))
+  (currentGrammar (parameter5 currentGrammar infoList))
+  (currentGrammar (parameter6 currentGrammar infoList))
+  (currentGrammar (parameter7 currentGrammar infoList))
+  (currentGrammar (parameter8 currentGrammar infoList))
+  (currentGrammar (parameter9 currentGrammar infoList))
+  (currentGrammar (parameter10 currentGrammar infoList))
+  (currentGrammar (parameter11 currentGrammar infoList))
+  (currentGrammar (parameter12 currentGrammar infoList))
+  (currentGrammar (parameter13 currentGrammar infoList))
+  (def results [currentGrammar, (isGrammarLearned? currentGrammar expectedGrammar)]))
 ;return newGrammar and grammarLearned in list?
 
