@@ -31,10 +31,14 @@
 
 
 (defn func2
+  [x num]
+  (if (> num 3)
+    (assoc x 1 3)
+    x))
+
+(defn func3
   [x]
-  (assoc x 1 "2"))
-
-
+  (println "this is x"))
 
 (defn -main
   "Loads the sentence file contents int to
@@ -43,8 +47,10 @@
   []
   (def x ["2" "1" "0"])
   (println x)
-  (def y (func2 x))
+  (def y (func2 x 2))
   (println y)
+  (def z (func2 x 23))
+  (println z)
 
   (println "Load file from memory")
   (def allSentences (readFile "tests.txt"))

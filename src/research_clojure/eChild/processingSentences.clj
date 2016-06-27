@@ -297,38 +297,99 @@
   (while (and (not grammarLearned) (< count max_num))
     (consumeSentence (rand-nth sentences))))
 
+(defn parameter1
+  [grammar infoList]
+  (if (= (get grammar 0) "0")
+    (def newGrammar (setSubjPos infoList grammar))))
+
+(defn parameter2
+  [grammar infoList]
+  (if (= (get grammar 1) "0")
+    (def newGrammar (setHead infoList grammar))))
+
+(defn parameter3
+  [grammar infoList]
+  (if (= (get grammar 2) "0")
+    (def newGrammar (setHead infoList grammar))))
+
+(defn parameter4
+  [grammar infoList]
+  (if (and (not= (get grammar 3) "0") (= (get grammar 5) "1"))
+    (def newGrammar (setObligTopic infoList grammar))))
+
+(defn parameter5
+  [grammar infoList]
+  (if (= (get grammar 4) "0")
+    (def newGrammar (setNullSubj infoList grammar))))
+
+(defn parameter6
+  [grammar infoList]
+  (if (= (get grammar 5) "0")
+    (def newGrammar (setNullTopic infoList grammar))))
+
+(defn parameter7
+  [grammar infoList]
+  (if (= (get grammar 6) "1")
+    (def newGrammar (setWHMovement infoList grammar))))
+
+
+(defn parameter8
+  [grammar infoList]
+  (if (= (get grammar 7) "0")
+    (def newGrammar (setPrepStrand infoList grammar))))
+
+
+(defn parameter9
+  [grammar infoList]
+  (if (= (get grammar 8) "0")
+    (def newGrammar (setTopicMark infoList grammar))))
+
+
+(defn parameter10
+  [grammar infoList]
+  (if (= (get grammar 9) "0")
+    (def newGrammar (vToI infoList grammar))))
+
+
+(defn parameter11
+  [grammar infoList]
+  (if (= (get grammar 10) "1")
+    (def newGrammar (iToC infoList grammar))))
+
+
+(defn parameter12
+  [grammar infoList]
+  (if (= (get grammar 11) "0")
+    (def newGrammar (affixHop infoList grammar))))
+
+
+(defn parameter13
+  [grammar infoList]
+  (if (= (get grammar 12) "1")
+    (def newGrammar (questionInver infoList grammar))))
+
+
+(defn isGrammarLearned?
+  [currentGrammar expectedGrammar]
+  (= currentGrammar expectedGrammar))
 
 (defn setParameters
   "Uses grammar, infolist"
   [infoList grammar expectedGrammar]
   newGrammar = []
-  (if (= (get grammar 0) "0") ;Parameter 1
-    (def newGrammar (setSubjPos infoList grammar)))
-  (if (= (get grammar 1) "0") ;Parameter 2
-    (def newGrammar (setHead infoList grammar)))
-  (if (= (get grammar 2) "0") ;Parameter 3
-    (def newGrammar (setHead infoList grammar)))
-  (if (and (not= (get grammar 3) "0") (= (get grammar 5) "1")) ;#Parameter 4 - Obligatory Topic : Problem parameter
-    (def newGrammar (setObligTopic infoList grammar)))
-  (if (= (get grammar 4) "0") ;Parameter 5
-    (def newGrammar (setNullSubj infoList grammar)))
-  (if (= (get grammar 5) "0") ;Parameter 6
-    (def newGrammar (setNullTopic infoList grammar)))
-  (if (= (get grammar 6) "1") ;Parameter 7
-    (def newGrammar (setWHMovement infoList grammar)))
-  (if (= (get grammar 7) "0") ;Parameter 8
-    (def newGrammar (setPrepStrand infoList grammar)))
-  (if (= (get grammar 8) "0") ;Parameter 9
-    (def newGrammar (setTopicMark infoList grammar)))
-  (if (= (get grammar 9) "0") ;Parameter 10
-    (def newGrammar (vToI infoList grammar)))
-  (if (= (get grammar 10) "1") ;Parameter 11 - I to C movement : Problem parameter
-    (def newGrammar (iToC infoList grammar)))
-  (if (= (get grammar 11) "0") ;Parameter 12
-    (def newGrammar (affixHop infoList grammar)))
-  (if (= (get grammar 12) "1") ;Parameter 13 - Question Inversion : Problem parameter
-    (def newGrammar (questionInver infoList grammar)))
-  (if (= grammar expectedGrammar)
-    (def grammarLearned true)))
+  (parameter1 grammar infoList)
+  (parameter2 grammar infoList)
+  (parameter3 grammar infoList)
+  (parameter4 grammar infoList)
+  (parameter5 grammar infoList)
+  (parameter6 grammar infoList)
+  (parameter7 grammar infoList)
+  (parameter8 grammar infoList)
+  (parameter9 grammar infoList)
+  (parameter10 grammar infoList)
+  (parameter11 grammar infoList)
+  (parameter12 grammar infoList)
+  (parameter13 grammar infoList)
+  (isGrammarLearned? currentGrammar expectedGrammar))
 ;return newGrammar and grammarLearned in list?
 
