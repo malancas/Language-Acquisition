@@ -1,5 +1,7 @@
 (ns research-clojure.eChild.processingSentences)
 (require ['clojure.string :as 'str])
+(ns tokenize
+  (:import (java.io BufferedWriter FileWriter)))
 
 (defn isQuestion
   [x]
@@ -11,7 +13,7 @@
   (= x "IMP"))
 
 
-(defn isDelarative
+(defn isDeclarative
   [x]
   (= x "DEC"))
 
@@ -23,7 +25,7 @@
 
     
 (defn Verb_tensed
-  [sentence]
+  [sentence x]
   (or isDeclarative x (and isQuestion x (in? sentence "Aux"))))
 
 
@@ -93,19 +95,14 @@
   (in? sen "ka"))
 
 
-(defn setParameters
-  [sen])
-
-
 ;First parameter
 (defn setSubjPos
-  [sen grammar]
+  [sen grammar infoList]
   (if (and (in? (get infoList 2) "01") (in? (get infoList 2) "S"))
-    ;;Check if 01 and S are in the sentence
+    ;;Check if 01 and S are in the sentence    
     (do (def first (.indexOf sen "01"))
-        ;Make sure 01 is non-sentence-initial and before S
         (if (and (> first 0) (< first (.indexOf sen "S")))
-          (assoc grammar 0 '1')))))
+          (assoc grammar 0 "1")))))
 
 
 (defn noSubjPos
@@ -288,7 +285,13 @@
 (defn isGrammarLearned?
   [x]
   (= x true))
-  
+
+
+(defn writeResults [lines]
+  (with-open [wtr (BufferedWriter. (FileWriter. "output.txt"))]
+    (doseq [line lines] (.write	wtr line))))
+
+
 (defn doesChildLearnGrammar
   "Runs sentence consuming functions until the 
   correct grammar is learned or the maximum number
@@ -302,7 +305,10 @@
     (def infoListAndSentence (consumeSentence (rand-nth sentences)))
     (def currGrammarAndState (setParameters))
     (swap! grammarLearned (isGrammarLearned? (get currGrammarAndState 1)))
-    (swap! sentenceCount inc)))
+    (swap! sentenceCount inc))
+  
+  (writeResults currGrammarAndState)
+)
 
 (defn parameter1
   [grammar infoList]

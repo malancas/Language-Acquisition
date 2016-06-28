@@ -1,6 +1,6 @@
 (ns research-clojure.core)
-;(require 'research-clojure.eChild.processingSentences)
-;(refer 'research-clojure.eChild.processingSentences)
+(require 'research-clojure.eChild.processingSentences)
+(refer 'research-clojure.eChild.processingSentences)
 (require ['clojure.string :as 'str])
 (require '[clojure.data.csv :as csv])
 
@@ -43,7 +43,8 @@
   (println (get (get allSentences 0) 0))
   (def selectedSentences (chooseSentences allSentences "611"))
   (println (count selectedSentences))
-  (println (get selectedSentences 0)))
+  (println (get selectedSentences 0))
+  )
 
 
 
