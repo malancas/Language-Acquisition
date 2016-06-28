@@ -1,4 +1,6 @@
 (ns research-clojure.core)
+;(require 'research-clojure.eChild.processingSentences)
+;(refer 'research-clojure.eChild.processingSentences)
 (require ['clojure.string :as 'str])
 (require '[clojure.data.csv :as csv])
 
@@ -30,33 +32,18 @@
                        (set [sentence]))))))))
 
 
-(defn func2
-  [x num]
-  (if (> num 3)
-    (assoc x 1 3)
-    x))
-
-(defn func3
-  [x]
-  (println "this is x"))
-
-(defn isQuestion
-  [x]
-  (= x "Q"))
-
 (defn -main
   "Loads the sentence file contents int to
   memory and creates a file of selected sentences
   based on a chosen grammar ID"
   []
 
-   (println "Load file from memory")
-   (def allSentences (readFile "tests.txt"))
-   (println (get (get allSentences 0) 0))
-   (def selectedSentences (chooseSentences allSentences "611"))
-   (println (count selectedSentences))
-   (println (get selectedSentences 0))
-)
+  (println "Load file from memory")
+  (def allSentences (readFile "tests.txt"))
+  (println (get (get allSentences 0) 0))
+  (def selectedSentences (chooseSentences allSentences "611"))
+  (println (count selectedSentences))
+  (println (get selectedSentences 0)))
 
 
 

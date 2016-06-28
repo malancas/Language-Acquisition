@@ -282,20 +282,27 @@
   [sen]
   (def info (str.replace sen #"\n" ""))
   (def info (str.replace info #"\"" ""))
-  (def infoList (str.split info #"\t"))
-  (def sentence (str.split (get infoList 2) #" ")))
+  (def results [(def infoList (str.split info #"\t")), (def sentence (str.split (get infoList 2) #" "))]))
 
+
+(defn isGrammarLearned?
+  [x]
+  (= x true))
   
 (defn doesChildLearnGrammar
   "Runs sentence consuming functions until the 
   correct grammar is learned or the maximum number
   of sentences are processed"
   [sentences max_num]
-  (def grammarLearned false)
-  (def count 0)
 
-  (while (and (not grammarLearned) (< count max_num))
-    (consumeSentence (rand-nth sentences))))
+  (def grammarLearned (atom false))
+  (def sentenceCount (atom 0))
+
+  (while (and (not @grammarLearned) (< @sentenceCount max_num))
+    (def infoListAndSentence (consumeSentence (rand-nth sentences)))
+    (def currGrammarAndState (setParameters))
+    (swap! grammarLearned (isGrammarLearned? (get currGrammarAndState 1)))
+    (swap! sentenceCount inc)))
 
 (defn parameter1
   [grammar infoList]
