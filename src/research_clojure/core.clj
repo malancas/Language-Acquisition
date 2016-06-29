@@ -1,7 +1,6 @@
 (ns research-clojure.core)
 (require 'research-clojure.eChild.processingSentences)
 (refer 'research-clojure.eChild.processingSentences)
-(require ['clojure.string :as 'str])
 (require '[clojure.data.csv :as csv])
 
 ;Used to read in the sentence file
@@ -39,11 +38,11 @@
   []
 
   (println "Load file from memory")
-  (def allSentences (readFile "tests.txt"))
-  (println (get (get allSentences 0) 0))
+  (def allSentences (readFile "EngFrJapGerm.txt"))
+  ;Sentences with the grammar ID 611 are copied into
+  ;the selectedSentences vector
   (def selectedSentences (chooseSentences allSentences "611"))
-  (println (count selectedSentences))
-  (println (get selectedSentences 0))
+  (runSimulation selectedSentences 100 1000)
   )
 
 

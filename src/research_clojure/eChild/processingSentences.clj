@@ -1,7 +1,45 @@
 (ns research-clojure.eChild.processingSentences)
 (require ['clojure.string :as 'str])
-(ns tokenize
-  (:import (java.io BufferedWriter FileWriter)))
+(comment (ns tokenize
+     (:import (java.io BufferedWriter FileWriter)))) 
+
+
+(defn consumeSentence
+  "Sets infoList, sentence, expectedGrammar, currentGrammar
+  in old implementation"
+  [sen]
+  (def info (str/replace sen #"\n" ""))
+  (def info (str/replace info #"\"" ""))
+  (def results [(def infoList (str/split info #"\t")), (def sentence (str/split (get infoList 2) #" "))]))
+
+
+(defn doesChildLearnGrammar?
+  "Runs sentence consuming functions until the 
+  correct grammar is learned or the maximum number
+  of sentences are processed"
+  [sentences max_num]
+
+  (def grammarLearned (atom false))
+  (def sentenceCount (atom 0))
+
+  (while (and (not @grammarLearned) (< @sentenceCount max_num))
+    (def infoListAndSentence (consumeSentence (rand-nth sentences)))
+    (def currGrammarAndState (setParameters))
+    (swap! grammarLearned (isGrammarLearned? (get currGrammarAndState 1)))
+    (swap! sentenceCount inc))
+  
+  (writeResults currGrammarAndState)
+)
+
+
+(defn runSimulation
+  [sentences max_eChildren max_sentences]
+  (def count (atom 0))
+  (while (< count max_eChildren)
+    (println count)
+    (doesChildLearnGrammar? sentences max_sentences)
+    (swap! count inc)))
+
 
 (defn isQuestion
   [x]
@@ -273,15 +311,6 @@
     (assoc grammar 12 "0")))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(defn consumeSentence
-  "Sets infoList, sentence, expectedGrammar, currentGrammar
-  in old implementation"
-  [sen]
-  (def info (str.replace sen #"\n" ""))
-  (def info (str.replace info #"\"" ""))
-  (def results [(def infoList (str.split info #"\t")), (def sentence (str.split (get infoList 2) #" "))]))
-
-
 (defn isGrammarLearned?
   [x]
   (= x true))
@@ -291,24 +320,6 @@
   (with-open [wtr (BufferedWriter. (FileWriter. "output.txt"))]
     (doseq [line lines] (.write	wtr line))))
 
-
-(defn doesChildLearnGrammar
-  "Runs sentence consuming functions until the 
-  correct grammar is learned or the maximum number
-  of sentences are processed"
-  [sentences max_num]
-
-  (def grammarLearned (atom false))
-  (def sentenceCount (atom 0))
-
-  (while (and (not @grammarLearned) (< @sentenceCount max_num))
-    (def infoListAndSentence (consumeSentence (rand-nth sentences)))
-    (def currGrammarAndState (setParameters))
-    (swap! grammarLearned (isGrammarLearned? (get currGrammarAndState 1)))
-    (swap! sentenceCount inc))
-  
-  (writeResults currGrammarAndState)
-)
 
 (defn parameter1
   [grammar infoList]
