@@ -370,7 +370,7 @@
 (defn runSimulation
   [sentences max_eChildren max_sentences]
   (def count (atom 0))
-  (while (< count max_eChildren)
+  (while (< @count max_eChildren)
     (println count)
     (doesChildLearnGrammar? sentences max_sentences)
     (swap! count inc)))
