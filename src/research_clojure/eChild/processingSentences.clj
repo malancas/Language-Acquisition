@@ -363,8 +363,7 @@
     (swap! grammarLearned (isGrammarLearned? (get currGrammarAndState 1)))
     (swap! sentenceCount inc))
   
-  (writeResults currGrammarAndState)
-)
+  (writeResults currGrammarAndState))
 
 
 (defn runSimulation
