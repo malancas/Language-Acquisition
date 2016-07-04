@@ -343,7 +343,6 @@
   (def results [infoList, (clojure.string/split (get infoList 2) #" ")]))
 
 
-
 (defn writeResults [lines]
  ;need to be rewritten
 )
@@ -371,7 +370,6 @@
   [sentences max_eChildren max_sentences]
   (def count (atom 0))
   (while (< @count max_eChildren)
-    (println count)
     (doesChildLearnGrammar? sentences max_sentences)
     (swap! count inc)))
 
