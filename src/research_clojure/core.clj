@@ -13,7 +13,6 @@
 ;matches gID
 (defn isSentenceNeeded
   [x gID]
-  (println (get x 0))
   (= gID (get x 0)))
 
 ;Iterates through the file containing all sentences
@@ -42,7 +41,8 @@
   ;Sentences with the grammar ID 611 are copied into
   ;the selectedSentences vector
   (def selectedSentences (chooseSentences allSentences "611"))
-  (runSimulation selectedSentences 100 1000))
+  (runSimulation selectedSentences 100 1000)
+  )
 
 
 

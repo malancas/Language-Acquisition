@@ -338,9 +338,10 @@
   "Sets infoList, sentence, expectedGrammar, currentGrammar
   in old implementation"
   [sen]
-  (def info (str/replace sen #"\n" ""))
-  (def info (str/replace info #"\"" ""))
-  (def results [(def infoList (str/split info #"\t")), (def sentence (str/split (get infoList 2) #" "))]))
+  (def info (clojure.string/join " " sen))
+  (def infoList (clojure.string/split info #" " 3))
+  (def results [infoList, (clojure.string/split (get infoList 2) #" ")]))
+
 
 
 (defn writeResults [lines]
