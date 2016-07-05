@@ -1,6 +1,6 @@
 (ns research-clojure.core)
-(require 'research-clojure.eChild.processingSentences)
-(refer 'research-clojure.eChild.processingSentences)
+(require 'research-clojure.eChild.runSimulation)
+(refer 'research-clojure.eChild.runSimulation)
 (require '[clojure.data.csv :as csv])
 
 ;Used to read in the sentence file

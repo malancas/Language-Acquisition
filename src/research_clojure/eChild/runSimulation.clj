@@ -1,4 +1,4 @@
-(ns research-clojure.eChild.processingSentences)
+(ns research-clojure.eChild.runSimulation)
 (require 'research-clojure.eChild.Child)
 (refer 'research-clojure.eChild.Child)
 (require ['clojure.string :as 'str])
