@@ -1,7 +1,6 @@
-(ns research-clojure.eChild.runSimulation)
-(require 'research-clojure.eChild.Child)
-(refer 'research-clojure.eChild.Child)
-(require ['clojure.string :as 'str])
+(ns research-clojure.eChild.runSimulation
+  (:require [research-clojure.eChild.Child :refer :all]
+            ['clojure.string :as 'str]))
 
 
 (defn writeResults [lines]
