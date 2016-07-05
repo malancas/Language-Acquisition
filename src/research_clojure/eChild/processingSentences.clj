@@ -351,18 +351,17 @@
 (defn doesChildLearnGrammar?
   "Runs sentence consuming functions until the 
   correct grammar is learned or the maximum number
-  of sentences are processed"
+  of sentences are processed. Needs infoList, grammar, expected grammar"
   [sentences max_num]
-
   (def grammarLearned (atom false))
   (def sentenceCount (atom 0))
 
   (while (and (not @grammarLearned) (< @sentenceCount max_num))
-    (def infoListAndSentence (consumeSentence (rand-nth sentences)))
-    (def currGrammarAndState (setParameters))
+    (def infoListAndState (consumeSentence (rand-nth sentences)))
+    (def eChildData (conj eChildData [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1]))
+    (def currGrammarAndState (setParameters (get eChildData 0) (get eChildData 2)))
     (swap! grammarLearned (isGrammarLearned? (get currGrammarAndState 1)))
-    (swap! sentenceCount inc))
-  
+    (swap! sentenceCount inc)) 
   (writeResults currGrammarAndState))
 
 
