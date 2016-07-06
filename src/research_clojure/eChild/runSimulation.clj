@@ -18,13 +18,12 @@
   (def sentenceCount (atom 0))
 
   (while (and (not @grammarLearned) (< @sentenceCount max_num))
-    (def infoListAndState (consumeSentence (rand-nth sentences)))
-    (def eChildData (conj eChildData [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1]))
+    (def eChildData (conj (consumeSentence (rand-nth sentences)) [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1]))
     (def currGrammarAndState (setParameters (get eChildData 0) (get eChildData 2)))
     (swap! grammarLearned (isGrammarLearned? (get currGrammarAndState 1)))
-    (swap! sentenceCount inc)) 
-  (writeResults currGrammarAndState))
-
+    (swap! sentenceCount inc))
+  ;(writeResults currGrammarAndState)
+  )
 
 (defn runSimulation
   [sentences max_eChildren max_sentences]
