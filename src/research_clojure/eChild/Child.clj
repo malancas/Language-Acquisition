@@ -235,7 +235,7 @@
 (defn parameter1
   [grammar infoList]
   (if (= (get grammar 0) "0")
-    (def newGrammar (setSubjPos infoList grammar))))
+    (setSubjPos infoList grammar)))
 
 
 (defn parameter2
@@ -306,17 +306,21 @@
 
 
 (defn isGrammarLearned?
-  [currentGrammar expectedGrammar]
-  (= currentGrammar expectedGrammar))
+  "Converts the grammar ID to binary and compares it to
+  currentGrammar"
+  [currentGrammar infoList]
+  (= currentGrammar (Integer/toString (get infoList 0) 2)))
 
 
 (defn setParameters
   "Uses grammar, infolist"
-  [infoList grammar expectedGrammar]
+  [infoList grammar]
   
   (def currentGrammar (atom []))
-  
+
   (swap! currentGrammar (parameter1 grammar infoList))
+  (println "currG 1: " currentGrammar)
+
   (swap! currentGrammar (parameter2 currentGrammar infoList))
   (swap! currentGrammar (parameter3 currentGrammar infoList))
   (swap! currentGrammar (parameter4 currentGrammar infoList))
@@ -330,7 +334,7 @@
   (swap! currentGrammar (parameter12 currentGrammar infoList))
   (swap! currentGrammar (parameter13 currentGrammar infoList))
 
-  (def results [currentGrammar, (isGrammarLearned? currentGrammar expectedGrammar)]))
+  (def results [currentGrammar, (isGrammarLearned? currentGrammar infoList)]))
 ;return newGrammar and grammarLearned in list?
 
 
@@ -340,7 +344,7 @@
   [sen]
   (def info (clojure.string/join " " sen))
   (def infoList (clojure.string/split info #" " 3))
-  (def results [infoList, (clojure.string/split (get infoList 2) #" ")]))
+  [infoList, (clojure.string/split (get infoList 2) #" ")])
 
 
 (defn noSubjPos

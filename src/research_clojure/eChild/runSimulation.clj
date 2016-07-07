@@ -1,12 +1,18 @@
 (ns research-clojure.eChild.runSimulation)
 (require 'research-clojure.eChild.Child)
 (refer 'research-clojure.eChild.Child)
-(require ['clojure.string :as 'str])
+(require '[clojure.string :as str]
+         '[clojure.data.csv :as csv]
+         '[clojure.java.io :as io]
+         '[clojure.set :refer [union]])
 
 
-(defn writeResults [lines]
- ;need to be rewritten
-)
+(defn writeResults
+  "Writes the results of doesChildLearnGrammar? to output file"
+  [lines]
+  (with-open [out-file (io/writer "results.csv")]
+  (csv/write-csv out-file
+                 lines)))
 
 
 (defn doesChildLearnGrammar?
@@ -17,14 +23,14 @@
   (def grammarLearned (atom false))
   (def sentenceCount (atom 0))
 
-  (def eChildData [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1])
+  (def grammar [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1])
   (while (and (not @grammarLearned) (< @sentenceCount max_num))
-    (conj eChildData (consumeSentence (rand-nth sentences)))
-    (def currGrammarAndState (setParameters (get eChildData 1) (get eChildData 0)))
+    (def infoListAndSentence (consumeSentence (rand-nth sentences)))
+    (def currGrammarAndState (setParameters (get infoListAndSentence 0) grammar))
     (swap! grammarLearned (isGrammarLearned? (get currGrammarAndState 1)))
     (swap! sentenceCount inc))
-  ;(writeResults currGrammarAndState)
-  )
+  (writeResults currGrammarAndState))
+
 
 (defn runSimulation
   [sentences max_eChildren max_sentences]
