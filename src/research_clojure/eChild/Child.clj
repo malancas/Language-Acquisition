@@ -4,8 +4,10 @@
 
 (defn in?
   "Returns true if e is an element of sentence"
-  [sentence e]  
-  (some #(= e %) sentence))
+  [sentence e]
+  (println "sentence: " sentence)
+  (println "e: " e)
+  (> (.indexOf sentence e) -1))
 
 
 (defn isDeclarative
@@ -92,16 +94,6 @@
     (do (def i (.indexOf sen "Aux"))
         (and (> i 0) (= (+ i 1) (.indexOf sen "S")))))
   false)
-
-
-;First parameter
-(defn setSubjPos
-  [sen grammar infoList]
-  (if (and (in? (get infoList 2) "01") (in? (get infoList 2) "S"))
-    ;;Check if 01 and S are in the sentence    
-    (do (def first (.indexOf sen "01"))
-        (if (and (> first 0) (< first (.indexOf sen "S")))
-          (assoc grammar 0 "1")))))
 
 
 ;2nd parameter
@@ -232,10 +224,17 @@
     (assoc grammar 12 "0")))
 
 
-(defn parameter1
+(defn setSubjPos
+  "Parameter 1"
   [grammar infoList]
   (if (= (get grammar 0) "0")
-    (setSubjPos infoList grammar)))
+    (do (def sen (get infoList 2))
+        (if (and (in? sen "01") (in? sen "S"))
+          ;;Check if 01 and S are in the sentence    
+          (do (def first (.indexOf sen "01"))
+              (if (and (> first 0) (< first (.indexOf sen "S")))
+                (assoc grammar 0 "1")))))
+    grammar))
 
 
 (defn parameter2
@@ -314,13 +313,11 @@
 
 (defn setParameters
   "Uses grammar, infolist"
-  [infoList grammar]
+  [infoList initGrammar]
   
   (def currentGrammar (atom []))
 
-  (swap! currentGrammar (parameter1 grammar infoList))
-  (println "currG 1: " currentGrammar)
-
+  (reset! currentGrammar (setSubjPos initGrammar infoList))
   (swap! currentGrammar (parameter2 currentGrammar infoList))
   (swap! currentGrammar (parameter3 currentGrammar infoList))
   (swap! currentGrammar (parameter4 currentGrammar infoList))
