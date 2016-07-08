@@ -16,12 +16,13 @@
   [x gID]
   (= gID (get x 0)))
 
-;Iterates through the file containing all sentences
-;and adds sentences with grammar IDs matching gID
-;to a new vector
+
 (defn chooseSentences
-  [file gID]
-  (loop [remainingSentences file chosenSentences []]
+  "Iterates through sentences, containing all sentences,
+  and adds sentences with grammar IDs matching gID
+  to a new vector"
+  [sentences gID]
+  (loop [remainingSentences sentences chosenSentences []]
     (if (empty? remainingSentences)
       chosenSentences
       (let [[sentence & remaining] remainingSentences]
