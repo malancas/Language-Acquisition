@@ -5,8 +5,6 @@
 (defn in?
   "Returns true if e is an element of sentence"
   [sentence e]
-  (println "sentence: " sentence)
-  (println "e: " e)
   (> (.indexOf sentence e) -1))
 
 
@@ -406,8 +404,8 @@
 (defn isGrammarLearned?
   "Converts the grammar ID to binary and compares it to
   currentGrammar"
-  [currentGrammar infoList]
-  (let [dec (int (read-string (get infoList 0)))]
+  [currentGrammar grammarID]
+  (let [dec (int (read-string (get grammarID 0)))]
     (= currentGrammar (Integer/toString dec 2))))
 
 

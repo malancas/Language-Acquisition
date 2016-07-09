@@ -9,10 +9,11 @@
 
 (defn writeResults
   "Writes the results of doesChildLearnGrammar? to output file"
-  [lines]
-  (with-open [out-file (io/writer "results.csv")]
-  (csv/write-csv out-file
-                 lines)))
+  [lines]  
+  (comment
+    (with-open [out-file (io/writer "results.csv")]
+      (csv/write-csv out-file
+                 lines))))
 
 
 (defn doesChildLearnGrammar?
@@ -27,7 +28,7 @@
   (while (and (not @grammarLearned) (< @sentenceCount max_num))
     (def infoListAndSentence (consumeSentence (rand-nth sentences)))
     (def currGrammarAndState (setParameters (get infoListAndSentence 0) grammar))
-    (swap! grammarLearned (isGrammarLearned? (get currGrammarAndState 1)))
+    (reset! grammarLearned (isGrammarLearned? (get currGrammarAndState 0) (get infoListAndSentence 0)))
     (swap! sentenceCount inc))
   (writeResults currGrammarAndState))
 
@@ -36,6 +37,7 @@
   [sentences max_eChildren max_sentences]
   (def count (atom 0))
   (while (< @count max_eChildren)
-    (doesChildLearnGrammar? sentences max_sentences)
-    (swap! count inc)))
+    (println "eChild #" @count)
+   (doesChildLearnGrammar? sentences max_sentences)
+   (swap! count inc)))
 
