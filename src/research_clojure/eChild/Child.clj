@@ -5,7 +5,7 @@
 (defn in?
   "Returns true if e is an element of sentence"
   [sentence e]
-  (> (.indexOf sentence e) -1))
+  (= e (some #{e} sentence)))
 
 
 (defn isDeclarative
@@ -293,110 +293,120 @@
     grammar))
 
 
+(defn setHead_aux1
+  [infoList initGrammar]
+  (if (and (not= nil (in? (get infoList 2) "03")) (not= nil (in? (get infoList 2) "P")))
+    (do (def first (.indexOf (get infoList 2) "03"))
+        ;If 03 followed by P
+            (if (and (> first 0) (= (.indexOf (get infoList 2) "P") (+ first 1)))
+              (assoc initGrammar 1 1)
+              initGrammar))
+    initGrammar))
+
+
+(defn setHead_aux2
+  [infoList initGrammar]
+  ;If imperative, make sure Verb directly follow 01
+  (if (and (isImperative (get infoList 1)) (in? (get infoList 2) "01") (in? (get infoList 2) "Verb"))
+     (if (= (.indexOf (get infoList 2) "01") (- (.indexOf (get infoList 2) "Verb") 1))
+       (assoc initGrammar 1 1)
+       initGrammar)
+     initGrammar))
+
+
 (defn setHead
   [infoList grammar]
-  (if (and (in? (get infoList 2) "03") (in? (get infoList 2) "P"))
-        (do (def first (.indexOf (get infoList 2) "03"))
-            ;03 followed by P
-            (if (and (> first 0) (= (.indexOf (get infoList 2) "P") (+ first 1)))
-              (assoc grammar 1 "1")
-              grammar))
-        grammar)
-   ;If imperative, make sure Verb directly follow 01
-   (if (and (isImperative (get infoList 1)) (in? (get infoList 2) "01") (in? (get infoList 2) "Verb"))
-     (if (= (.indexOf (get infoList 2) "01") (- (.indexOf (get infoList 2) "Verb") 1))
-       (assoc grammar 1 "1")
-       grammar)
-     grammar))
+  (let [tempGrammar (setHead_aux1 infoList grammar)]   
+    (setHead_aux2 infoList tempGrammar)))
 
 
 (defn parameter1
   [grammar infoList]
-  (if (= (get grammar 0) "0")
+  (if (= (get grammar 0) 0)
     (setSubjPos grammar (get infoList 2))
     grammar))
 
 
 (defn parameter2
   [grammar infoList]
-  (if (= (get grammar 1) "0")
+  (if (= (get grammar 1) 0)
     (setHead infoList grammar)
     grammar))
 
 
 (defn parameter3
   [grammar infoList]
-  (if (= (get grammar 2) "0")
+  (if (= (get grammar 2) 0)
     (setHead infoList grammar)
     grammar))
 
 
 (defn parameter4
   [grammar infoList]
-  (if (and (not= (get grammar 3) "0") (= (get grammar 5) "1"))
+  (if (and (not= (get grammar 3) 0) (= (get grammar 5) 1))
     (setObligTopic infoList grammar)
     grammar))
 
 
 (defn parameter5
   [grammar infoList]
-  (if (= (get grammar 4) "0")
+  (if (= (get grammar 4) 0)
     (setNullSubj infoList grammar)
     grammar))
 
 
 (defn parameter6
   [grammar infoList]
-  (if (= (get grammar 5) "0")
+  (if (= (get grammar 5) 0)
     (setNullTopic infoList grammar)
     grammar))
 
 
 (defn parameter7
   [initGrammar infoList]
-  (if (= (get initGrammar 6) "1")
+  (if (= (get initGrammar 6) 1)
     (setWHMovement infoList initGrammar)
     initGrammar))
 
 
 (defn parameter8
   [initGrammar infoList]
-  (if (= (get initGrammar 7) "0")
+  (if (= (get initGrammar 7) 0)
     (setPrepStrand infoList initGrammar)
     initGrammar))
 
 
 (defn parameter9
   [initGrammar infoList]
-  (if (= (get initGrammar 8) "0")
+  (if (= (get initGrammar 8) 0)
     (setTopicMark infoList initGrammar)
     initGrammar))
 
 
 (defn parameter10
   [initGrammar infoList]
-  (if (= (get initGrammar 9) "0")
+  (if (= (get initGrammar 9) 0)
     (vToI infoList initGrammar)
     initGrammar))
 
 
 (defn parameter11
   [initGrammar infoList]
-  (if (= (get initGrammar 10) "1")
+  (if (= (get initGrammar 10) 1)
     (iToC infoList initGrammar)
     initGrammar))
 
 
 (defn parameter12
   [initGrammar infoList]
-  (if (= (get initGrammar 11) "0")
+  (if (= (get initGrammar 11) 0)
     (affixHop infoList initGrammar)
     initGrammar))
 
 
 (defn parameter13
   [initGrammar infoList]
-  (if (= (get initGrammar 12) "1")
+  (if (= (get initGrammar 12) 1)
     (questionInver infoList initGrammar)
     initGrammar))
 
