@@ -10,10 +10,15 @@
 (defn writeResults
   "Writes the results of doesChildLearnGrammar? to output file"
   [lines]  
-  (comment
-    (with-open [out-file (io/writer "results.csv")]
-      (csv/write-csv out-file
-                 lines))))
+  (with-open [out-file (clojure.java.io/writer "results.csv")]
+    (csv/write-csv out-file
+                   lines)))
+
+
+(defn write-test
+  [lines]
+  (with-open [out-file (clojure.java.io/writer "out.csv")]
+            (csv/write-csv out-file [[@(get lines 0)] [(get lines 1)]])))
 
 
 (defn doesChildLearnGrammar?
@@ -30,7 +35,7 @@
     (def currGrammarAndState (setParameters (get infoListAndSentence 0) grammar))
     (reset! grammarLearned (isGrammarLearned? (get currGrammarAndState 0) (get infoListAndSentence 0)))
     (swap! sentenceCount inc))
-  (writeResults currGrammarAndState))
+  (write-test currGrammarAndState))
 
 
 (defn runSimulation

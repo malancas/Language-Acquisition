@@ -430,7 +430,7 @@
   
   (def currentGrammar (atom []))
 
-  (reset! currentGrammar (setSubjPos initGrammar infoList))
+  (reset! currentGrammar (parameter1 initGrammar infoList))
   (reset! currentGrammar (parameter2 currentGrammar infoList))
   (reset! currentGrammar (parameter3 currentGrammar infoList))
   (reset! currentGrammar (parameter4 currentGrammar infoList))
@@ -444,6 +444,7 @@
   (reset! currentGrammar (parameter12 currentGrammar infoList))
   (reset! currentGrammar (parameter13 currentGrammar infoList))
 
+  ;(println "current: " currentGrammar)
   [currentGrammar, (isGrammarLearned? currentGrammar infoList)])
 ;return newGrammar and grammarLearned in list?
 
