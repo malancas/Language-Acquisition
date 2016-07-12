@@ -15,7 +15,16 @@
 
     (let [currGrammar (parameter1 [0,0,0,1,0,1,1,0,0,0,0,0,0]  ["611", "DEC", ["Adv", "S", "Aux", "Never", "Verb"]])]
          (assert (= 13 (count currGrammar)))
-         (assert (= nil (some #(< 1 %) currGrammar))))))
+         (assert (= nil (some #(< 1 %) currGrammar)))
+         (assert (= currGrammar [0,0,0,1,0,1,1,0,0,0,0,0,0])))
+    (let [currGrammar (parameter1 [0,0,0,1,0,1,1,0,0,0,0,0,0]  ["611", "DEC", ["Adv", "01", "P", "S", "Aux", "Never", "Verb"]])]
+         (assert (= 13 (count currGrammar)))
+         (assert (= nil (some #(< 1 %) currGrammar)))
+         (assert (= currGrammar [1,0,0,1,0,1,1,0,0,0,0,0,0])))
+    (let [currGrammar (parameter1 [0,0,0,1,0,1,1,0,0,0,0,0,0]  ["611", "DEC", ["01", "P", "S", "Aux", "Never", "Verb"]])]
+         (assert (= 13 (count currGrammar)))
+         (assert (= nil (some #(< 1 %) currGrammar)))
+         (assert (= currGrammar [0,0,0,1,0,1,1,0,0,0,0,0,0])))))
 
 
 (deftest parameter2-tests
@@ -35,7 +44,9 @@
   
     (let [currGrammar (parameter3 [0,0,0,1,0,1,1,0,0,0,0,0,0]  ["611", "DEC", ["Adv", "S", "Aux", "Never", "Verb"]])]
          (assert (= 13 (count currGrammar)))
-         (assert (= nil (some #(< 1 %) currGrammar))))))
+         (assert (= nil (some #(< 1 %) currGrammar)))
+         (assert (= currGrammar [0,0,0,1,0,1,1,0,0,0,0,0,0])))))
+
 
 (deftest parameter4-tests
   (testing "Testing parameter4"

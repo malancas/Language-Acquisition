@@ -81,90 +81,86 @@
 (defn S_Aux
   [sen]
   (if (isDeclarative (get sen 1))
-    (do (def i (.indexOf sen "S"))
-        (and (> i 0) (= (+ i 1) (.indexOf sen "Aux")))))
-  false)
+    (do (let [i (.indexOf sen "S")]
+          (and (> i 0) (= (+ i 1) (.indexOf sen "Aux")))))
+    false))
 
 
 (defn Aux_S
   [sen]
   (if (isDeclarative (get sen 1))
-    (do (def i (.indexOf sen "Aux"))
-        (and (> i 0) (= (+ i 1) (.indexOf sen "S")))))
-  false)
+    (do (let [i (.indexOf sen "Aux")]
+          (and (> i 0) (= (+ i 1) (.indexOf sen "S")))))
+    false))
 
 
-;4th parameter
 (defn setObligTopic
-  [sen infoList grammar]
+  "4th parameter"
+  [infoList grammar]
   (if (isDeclarative (get infoList 1))
-    (do (def infL2 (get infoList 2))
-        (if (and (in? infL2 "02") (= (in? infL2) false))
-          (do (assoc grammar 5 "1")
-              (if (= (get grammar 3) "1")
-                (assoc grammar 3 "0")
-                grammar))
-          (if (containsTopicalizable sen)
-            (assoc grammar 3 "1")
-            grammar)))
+    (do (let [sentence (get infoList 2)]
+          (if (and (in? sentence "02") (= (in? sentence) false))
+            (do (assoc grammar 5 1)
+                (if (= (get grammar 3) 1)
+                  (assoc grammar 3 0)
+                  grammar))
+            (if (containsTopicalizable sentence)
+              (assoc grammar 3 1)
+              grammar))))
     grammar))
 
 
-;5th parameter
-;Only works for full, not necessarily with CHILDES distribution
 (defn setNullSubj
-  [sentence infoList grammar]
-  (if (and (isDeclarative (get infoList 1)) (= (in? (get infoList 2) "S") false) (outOblique sentence))
-    (assoc grammar 4 "1")
+  "5th parameter,
+  Only works for full, not 
+  necessarily with CHILDES distribution"
+  [infoList grammar]
+  (if (and (isDeclarative (get infoList 1)) (= (in? (get infoList 2) "S") false) (outOblique (get infoList 2)))
+    (assoc grammar 4 1)
     grammar))
 
 
-;6th parameter
-;infL2 = infoList[2]
 (defn setNullTopic
-  [infL2 grammar]
-  (if (and (in? infL2 "02") (= (in? infL2 "01") false))
-    (assoc grammar 5 "1")
+  "6th parameter"
+  [sentence grammar]
+  (if (and (in? sentence "02") (= (in? sentence "01") false))
+    (assoc grammar 5 1)
     grammar))
 
 
-;7th parameter
-;infL2 = infoList[2]
 (defn setWHMovement
-  [sentence infL2 grammar]
-  (if (and (> (.indexOf sentence "+WH") 0) (= (in? infL2 "03[+WH]") false))
-    (assoc grammar 6 "0")
+  "7th parameter"
+  [sentence grammar]
+  (if (and (> (.indexOf sentence "+WH") 0) (= (in? sentence "03[+WH]") false))
+    (assoc grammar 6 0)
     grammar))
 
 
-;#8th parameter
-;infL2 = infoList[2]
 (defn setPrepStrand
-  [sentence infL2 grammar]
-  (if (and (in? infL2 "P") (in? infL2 "03"))
+  "8th parameter"
+  [sentence grammar]
+  (if (and (in? sentence "P") (in? sentence "03"))
     (do
       (def i (.indexOf sentence "P")) ;Get index of P
       (def j (.indexOf sentence "03")) ;Ge index of 03
       (if (and (not= i -1) (not= j -1) (not= (Math/abs (- i j)) -1)) ;If they exist, make sure they aren't adjacent
-        (assoc grammar 7 "1")
+        (assoc grammar 7 1)
         grammar))
     grammar))
 
 
-;9th parameter
-;infL2 = infoList[2]
 (defn setTopicMark
-  [infL2 grammar]
-  (if (in? infL2 "WA")
-    (assoc grammar 8 "1")
+  "9ath parameter"
+  [sentence grammar]
+  (if (in? sentence "WA")
+    (assoc grammar 8 1)
     grammar))
 
 
-;10th parameter
-;infL2 = infoList[2]
 (defn vToI
-  [sentence infL2 grammar]
-  (if (and (in? infL2 "01") (in? infL2 "Verb"))
+  "10th parameter"
+  [sentence grammar]
+  (if (and (in? sentence "01") (in? sentence "Verb"))
     (do (def i (.indexOf sentence "01"))
         (def j (.indexOf sentence "Verb"))
         (if (and (> i 0) (not= j -1) (not= (Math/abs (- i j)) 1))
@@ -248,36 +244,35 @@
 
 
 (defn affixHop_aux1
-  [infL1 infL2 grammar]
-  (if (and (Verb_tensed infL1) (in? infL2 "Never Verb 01"))
-    (assoc grammar 11 "1")
+  [senType sentence grammar]
+  (if (and (Verb_tensed senType) (in? sentence "Never Verb 01"))
+    (assoc grammar 11 1)
     grammar))
 
 
 (defn affixHop_aux2
-  [infL1 infL2 sentence grammar]
-  (if (and (Verb_tensed infL1) (> (.indexOf sentence "01") 0) (in? infL2 "01 Verb Never"))
-    (assoc grammar 11 "1")
+  [senType sentence grammar]
+  (if (and (Verb_tensed senType) (> (.indexOf sentence "01") 0) (in? sentence "01 Verb Never"))
+    (assoc grammar 11 1)
     grammar))
 
                                                   
 (defn affixHop
   "12th parameter"
-  [sentence infoList  initGrammar]
-  (def infL1 (get infoList 1))
-  (def infL2 (get infoList 2))
+  [infoList initGrammar]
+  (def senType (get infoList 1))
+  (def sentence (get infoList 2))
   (def currentGrammar (atom initGrammar))
 
-  (reset! currentGrammar (affixHop_aux1 infL1 infL2 currentGrammar))
-  (reset! currentGrammar (affixHop_aux2 infL1 infL2 sentence currentGrammar))
+  (reset! currentGrammar (affixHop_aux1 senType sentence currentGrammar))
+  (reset! currentGrammar (affixHop_aux2 senType sentence currentGrammar))
   currentGrammar)
 
   
-;13th parameter
-;infL2 = infoList[2]
 (defn questionInver
-  [infL2 grammar]
-  (if (in? infL2 "ka")
+  "13th parameter"
+  [sentence grammar]
+  (if (in? sentence "ka")
     (assoc grammar 12 "0")
     grammar))
 
@@ -288,12 +283,14 @@
     ;Check if 01 and S are in the sentence
     (do (let [first (.indexOf sen "01")]
          (if (and (> first 0) (< first (.indexOf sen "S")))
-           (assoc grammar 0 "1")
+           (assoc grammar 0 1)
            grammar)))
     grammar))
 
 
 (defn setHead_aux1
+  "Checks if both 03 and P are present in the sentence
+  and if they appear sequentially"
   [infoList initGrammar]
   (if (and (not= nil (in? (get infoList 2) "03")) (not= nil (in? (get infoList 2) "P")))
     (do (def first (.indexOf (get infoList 2) "03"))
@@ -305,8 +302,8 @@
 
 
 (defn setHead_aux2
+  "If imperative, make sure Verb directly follow 01"
   [infoList initGrammar]
-  ;If imperative, make sure Verb directly follow 01
   (if (and (isImperative (get infoList 1)) (in? (get infoList 2) "01") (in? (get infoList 2) "Verb"))
      (if (= (.indexOf (get infoList 2) "01") (- (.indexOf (get infoList 2) "Verb") 1))
        (assoc initGrammar 1 1)
@@ -454,7 +451,6 @@
   (reset! currentGrammar (parameter12 currentGrammar infoList))
   (reset! currentGrammar (parameter13 currentGrammar infoList))
 
-  ;(println "current: " currentGrammar)
   [currentGrammar, (isGrammarLearned? currentGrammar infoList)])
 ;return newGrammar and grammarLearned in list?
 
@@ -492,18 +488,16 @@
       (assoc grammar 1 "0"))))
 
 
-;3rd parameer
-;infL1 must be infoList[1]
 (defn setHeadCP
-  [sen infL1 grammar]
-  (if (isQuestion infL1)
+  "3rd parameter"
+  [sen senType grammar]
+  (if (isQuestion senType)
     (if (or (= (.indexOf sen "ka") (- (count sen) 1)) (and (= (in? sen "ka") false) (= (.indexOf sen "Aux") (- (count sen) 1))))
-      (assoc grammar 2 "1"))))
+      (assoc grammar 2 1))))
 
 
-;infL1 must be infoList[1]
 (defn noHeadCP
-  [sen infL1 grammar]
-  (if (isQuestion infL1)
+  [sen senType grammar]
+  (if (isQuestion senType)
     (if (or (= (.indexOf sen "ka") 0) (and (= (in? sen "ka") false) (= (.indexOf sen "Aux") 0)))
       (assoc grammar 2 "0"))))
