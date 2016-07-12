@@ -99,7 +99,7 @@
   [infoList grammar]
   (if (isDeclarative (get infoList 1))
     (do (let [sentence (get infoList 2)]
-          (if (and (not= nil (in? sentence "02")) (= nil (in? sentence "01")))
+          (if (and (in? sentence "02") (not (in? sentence "01")))
             (do (let [tempGrammar (assoc grammar 5 1)]
                 (if (= (get tempGrammar 3) 1)
                   (assoc tempGrammar 3 0)

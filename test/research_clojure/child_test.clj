@@ -6,8 +6,9 @@
 (deftest in?-tests
   (testing "Testing in?"
     (def x ["80", "Q", ["Adv", "03", "P", "S"]])
-    (assert (not= nil (in? (get x 2) "P")))
-    (assert (not= nil (in? (get x 2) "03")))))
+    (assert (in? (get x 2) "P"))
+    (assert (in? (get x 2) "03"))
+    (assert (not (in? (get x 2) "01")))))
 
 (deftest parameter1-tests
   (testing "Testing parameter1"
@@ -90,16 +91,15 @@
   (testing "Testing parameter4"
     ;The grammar won't change since 02 doesn't appear
     ;in the sentence
-    (let [currGrammar (parameter4 ["611", "DEC", ["Adv", "S", "Aux", "Never", "Verb"]] [0,0,0,1,0,1,1,0,0,0,0,0,0])]
-         ;(assert (= 13 (count currGrammar)))
-         (println currGrammar)
+    (let [currGrammar (parameter4 [0,0,0,1,0,1,1,0,0,0,0,0,0] ["611", "DEC", ["Adv", "S", "Aux", "Never", "Verb"]])]
+         (assert (= 13 (count currGrammar)))
          (assert (= nil (some #(< 1 %) currGrammar)))
          (assert (= currGrammar [0,0,0,1,0,1,1,0,0,0,0,0,0])))
 
     ;The sentence will become [0,0,0,0,0,1,1,0,0,0,0,0,0]
     ;since 02 does appear in the sentence and 01 doesn't
     ;and the 4th element in the initial grammar is 1
-    (let [currGrammar (parameter4 ["611", "DEC", ["Adv", "S", "Aux", "02", "Never", "Verb"]] [0,0,0,1,0,1,1,0,0,0,0,0,0])]
+    (let [currGrammar (parameter4 [0,0,0,1,0,1,1,0,0,0,0,0,0] ["611", "DEC", ["Adv", "S", "Aux", "02", "Never", "Verb"]])]
          (assert (= 13 (count currGrammar)))
          (assert (= nil (some #(< 1 %) currGrammar)))
          (assert (= currGrammar [0,0,0,0,0,1,1,0,0,0,0,0,0])))))
