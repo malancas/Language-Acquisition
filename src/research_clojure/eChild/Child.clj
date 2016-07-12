@@ -115,7 +115,7 @@
   Only works for full, not 
   necessarily with CHILDES distribution"
   [infoList grammar]
-  (if (and (isDeclarative (get infoList 1)) (= (in? (get infoList 2) "S") false) (outOblique (get infoList 2)))
+  (if (and (isDeclarative (get infoList 1)) (not (in? (get infoList 2) "S")) (outOblique (get infoList 2)))
     (assoc grammar 4 1)
     grammar))
 
@@ -123,7 +123,7 @@
 (defn setNullTopic
   "6th parameter"
   [sentence grammar]
-  (if (and (in? sentence "02") (= (in? sentence "01") false))
+  (if (and (in? sentence "02") (not (in? sentence "01")))
     (assoc grammar 5 1)
     grammar))
 
@@ -131,7 +131,7 @@
 (defn setWHMovement
   "7th parameter"
   [sentence grammar]
-  (if (and (> (.indexOf sentence "+WH") 0) (= (in? sentence "03[+WH]") false))
+  (if (and (> (.indexOf sentence "+WH") 0) (not (in? sentence "03[+WH]")))
     (assoc grammar 6 0)
     grammar))
 
@@ -164,64 +164,64 @@
     (do (def i (.indexOf sentence "01"))
         (def j (.indexOf sentence "Verb"))
         (if (and (> i 0) (not= j -1) (not= (Math/abs (- i j)) 1))
-          (assoc grammar 9 "1")
+          (assoc grammar 9 1)
           grammar))
     grammar))
 
 
 (defn iToC_aux1
   [g0 g1 g2 sentence grammar]
-  (if (and (= g0 "0") (= g1 "0") (= g2 "0") (S_Aux sentence))
-    (assoc grammar 10 "0")
+  (if (and (= g0 0) (= g1 0) (= g2 0) (S_Aux sentence))
+    (assoc grammar 10 0)
     grammar))
 
 
 (defn iToC_aux2
   [g0 g1 g2 sentence grammar]
-  (if (and (= g0 "1") (= g1 "1") (= g2 "1") (Aux_S sentence))
-    (assoc grammar 10 "0")
+  (if (and (= g0 1) (= g1 1) (= g2 1) (Aux_S sentence))
+    (assoc grammar 10 0)
     grammar))
 
 
 (defn iToC_aux3
   [g0 g1 g2 sentence grammar]
-  (if (and (= g0 "1") (= g1 "0") (= g2 "1") (Aux_Verb sentence))
-    (assoc grammar 10 "0")
+  (if (and (= g0 1) (= g1 0) (= g2 1) (Aux_Verb sentence))
+    (assoc grammar 10 0)
     grammar))
 
 
 (defn iToC_aux4
   [g0 g1 g2 sentence grammar]
-  (if (and (= g0 "0") (= g1 "1") (= g2 "0") (Verb_Aux sentence))
-    (assoc grammar 10 "0")
+  (if (and (= g0 0) (= g1 1) (= g2 0) (Verb_Aux sentence))
+    (assoc grammar 10 0)
     grammar))
 
 
 (defn iToC_aux5
   [g0 g1 g2 sentence grammar]
-  (if (and (= g0 "0") (= g1 "0") (= g2 "1") (S_Aux sentence))
-    (assoc grammar 10 "0")
+  (if (and (= g0 0) (= g1 0) (= g2 1) (S_Aux sentence))
+    (assoc grammar 10 0)
     grammar))
 
 
 (defn iToC_aux6
   [g0 g1 g2 sentence grammar]
-  (if (and (= g0 "1") (= g1 "1") (= g2 "0") (Aux_S sentence))
-    (assoc grammar 10 "0")
+  (if (and (= g0 1) (= g1 1) (= g2 1) (Aux_S sentence))
+    (assoc grammar 10 0)
     grammar))
 
 
 (defn iToC_aux7
   [g0 g1 g2 sentence grammar]
-  (if (and (= g0 "1") (= g1 "0") (= g2 "0") (or (Never_Verb sentence) (hasKa sentence)))
-    (assoc grammar 10 "0")
+  (if (and (= g0 1) (= g1 0) (= g2 0) (or (Never_Verb sentence) (hasKa sentence)))
+    (assoc grammar 10 0)
     grammar))
 
 
 (defn iToC_aux8
   [g0 g1 g2 sentence grammar]
-  (if (and (= g0 "0") (= g1 "1") (= g2 "1") (or (Verb_Never sentence) (hasKa sentence)))
-    (assoc grammar 10 "0")
+  (if (and (= g0 0) (= g1 1) (= g2 1) (or (Verb_Never sentence) (hasKa sentence)))
+    (assoc grammar 10 0)
     grammar))
 
 
