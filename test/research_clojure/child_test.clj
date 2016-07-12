@@ -88,7 +88,18 @@
 
 (deftest parameter4-tests
   (testing "Testing parameter4"
-  
-    (let [currGrammar (parameter4 [0,0,0,1,0,1,1,0,0,0,0,0,0]  ["611", "DEC", ["Adv", "S", "Aux", "Never", "Verb"]])]
+    ;The grammar won't change since 02 doesn't appear
+    ;in the sentence
+    (let [currGrammar (parameter4 ["611", "DEC", ["Adv", "S", "Aux", "Never", "Verb"]] [0,0,0,1,0,1,1,0,0,0,0,0,0])]
+         ;(assert (= 13 (count currGrammar)))
+         (println currGrammar)
+         (assert (= nil (some #(< 1 %) currGrammar)))
+         (assert (= currGrammar [0,0,0,1,0,1,1,0,0,0,0,0,0])))
+
+    ;The sentence will become [0,0,0,0,0,1,1,0,0,0,0,0,0]
+    ;since 02 does appear in the sentence and 01 doesn't
+    ;and the 4th element in the initial grammar is 1
+    (let [currGrammar (parameter4 ["611", "DEC", ["Adv", "S", "Aux", "02", "Never", "Verb"]] [0,0,0,1,0,1,1,0,0,0,0,0,0])]
          (assert (= 13 (count currGrammar)))
-         (assert (= nil (some #(< 1 %) currGrammar))))))
+         (assert (= nil (some #(< 1 %) currGrammar)))
+         (assert (= currGrammar [0,0,0,0,0,1,1,0,0,0,0,0,0])))))

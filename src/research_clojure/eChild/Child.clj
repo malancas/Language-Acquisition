@@ -99,11 +99,11 @@
   [infoList grammar]
   (if (isDeclarative (get infoList 1))
     (do (let [sentence (get infoList 2)]
-          (if (and (in? sentence "02") (= (in? sentence) false))
-            (do (assoc grammar 5 1)
-                (if (= (get grammar 3) 1)
-                  (assoc grammar 3 0)
-                  grammar))
+          (if (and (not= nil (in? sentence "02")) (= nil (in? sentence "01")))
+            (do (let [tempGrammar (assoc grammar 5 1)]
+                (if (= (get tempGrammar 3) 1)
+                  (assoc tempGrammar 3 0)
+                  tempGrammar)))
             (if (containsTopicalizable sentence)
               (assoc grammar 3 1)
               grammar))))
@@ -340,7 +340,7 @@
 
 (defn parameter4
   [grammar infoList]
-  (if (and (not= (get grammar 3) 0) (= (get grammar 5) 1))
+  (if (and (= (get grammar 3) 1) (= (get grammar 5) 1))
     (setObligTopic infoList grammar)
     grammar))
 
