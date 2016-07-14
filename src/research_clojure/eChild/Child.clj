@@ -355,14 +355,14 @@
 (defn parameter6
   [grammar infoList]
   (if (= (get grammar 5) 0)
-    (setNullTopic infoList grammar)
+    (setNullTopic (get infoList 2) grammar)
     grammar))
 
 
 (defn parameter7
   [initGrammar infoList]
   (if (= (get initGrammar 6) 1)
-    (setWHMovement infoList initGrammar)
+    (setWHMovement (get infoList 2) initGrammar)
     initGrammar))
 
 
@@ -432,7 +432,9 @@
 
 
 (defn setParameters
-  "Uses grammar, infolist"
+  "Passes the initial grammar through each of the parameter
+  functions, which will determine how to change the eChild's
+  grammar based on its sentence content and structure"
   [infoList initGrammar]
   
   (def currentGrammar (atom []))
@@ -449,55 +451,13 @@
   (reset! currentGrammar (parameter10 currentGrammar infoList))
   (reset! currentGrammar (parameter11 currentGrammar infoList))
   (reset! currentGrammar (parameter12 currentGrammar infoList))
-  (reset! currentGrammar (parameter13 currentGrammar infoList))
-
-  [currentGrammar, (isGrammarLearned? currentGrammar infoList)])
-;return newGrammar and grammarLearned in list?
+  (reset! currentGrammar (parameter13 currentGrammar infoList)))
 
 
 (defn consumeSentence
-  "Sets infoList, sentence, expectedGrammar, currentGrammar
-  in old implementation"
+  "Creates the infoList list that is used in setParameters"
   [sen]
   (def info (clojure.string/join " " sen))
   (def infoList (clojure.string/split info #" " 3))
   [infoList, (clojure.string/split (get infoList 2) #" ")])
 
-
-(defn noSubjPos
-  [sen grammar]
-  (if (and (in? (get infoList 2) "01") (in? (get infoList 2) "S"))
-    ;;Check if 01 and S are in the sentence
-    (do (def first (.indexOf sen "S"))
-        ;Make sure 01 is non-sentence-initial and before S
-        (if (and (> first 0) (< first (.indexOf sen "01")))
-          (assoc grammar 0 "0")))))
-    
-
-(defn noHead
-  [sen infoList grammar]
-  (if (and (in? (get infoList 2) "03") (in? (get infoList 2) "P"))
-    (do (def first (.indexOf sen "P"))
-        ;03 followed by P
-        (if (and (> first 0) (= (.indexOf sen "03") (+ first 1)))
-          (assoc grammar 1 "0"))))
-  
-  ;If imperative, make sure Verb directly follows 01
-  (if (and (isImperative (get infoList 1)) (in? (get infoList 2) "01") (in? (get infoList 2) "Verb"))
-    (if (= (.indexOf sen "Verb") (- (.indexOf sen "01") 1))
-      (assoc grammar 1 "0"))))
-
-
-(defn setHeadCP
-  "3rd parameter"
-  [sen senType grammar]
-  (if (isQuestion senType)
-    (if (or (= (.indexOf sen "ka") (- (count sen) 1)) (and (= (in? sen "ka") false) (= (.indexOf sen "Aux") (- (count sen) 1))))
-      (assoc grammar 2 1))))
-
-
-(defn noHeadCP
-  [sen senType grammar]
-  (if (isQuestion senType)
-    (if (or (= (.indexOf sen "ka") 0) (and (= (in? sen "ka") false) (= (.indexOf sen "Aux") 0)))
-      (assoc grammar 2 "0"))))

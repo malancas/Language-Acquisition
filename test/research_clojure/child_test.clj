@@ -103,3 +103,71 @@
          (assert (= 13 (count currGrammar)))
          (assert (= nil (some #(< 1 %) currGrammar)))
          (assert (= currGrammar [0,0,0,0,0,1,1,0,0,0,0,0,0])))))
+
+
+(deftest parameter5-tests
+  (testing "Testing parameter5"
+    ;The grammar won't change since S appears in the sentence
+    (let [currGrammar (parameter5 [0,0,0,1,0,1,1,0,0,0,0,0,0] ["611", "DEC", ["Adv", "S", "Aux", "Never", "Verb"]])]
+         (assert (= 13 (count currGrammar)))
+         (assert (= nil (some #(< 1 %) currGrammar)))
+         (assert (= currGrammar [0,0,0,1,0,1,1,0,0,0,0,0,0])))
+
+    ;The grammar will change
+    (let [currGrammar (parameter5 [0,0,0,1,0,1,1,0,0,0,0,0,0] ["611", "DEC", ["03", "Adv", "02", "Never", "Verb", "01", "P"]])]
+         (assert (= 13 (count currGrammar)))
+         (assert (= nil (some #(< 1 %) currGrammar)))
+         (assert (= currGrammar [0,0,0,1,1,1,1,0,0,0,0,0,0])))
+
+    ;The grammar won't change since 01 isn't in the sentence
+    (let [currGrammar (parameter5 [0,0,0,1,0,1,1,0,0,0,0,0,0] ["611", "DEC", ["03", "Adv", "02", "Never", "Verb", "P"]])]
+         (assert (= 13 (count currGrammar)))
+         (assert (= nil (some #(< 1 %) currGrammar)))
+         (assert (= currGrammar [0,0,0,1,0,1,1,0,0,0,0,0,0])))))
+
+
+(deftest parameter6-tests
+  (testing "Testing parameter6"
+    ;The grammar will change since 01 isn't in the sentence
+    ;and 02 is
+    (let [currGrammar (parameter6 [0,0,0,1,0,0,1,0,0,0,0,0,0] ["611", "DEC", ["03", "Adv", "02", "Never", "Verb", "P"]])]
+         (assert (= 13 (count currGrammar)))
+         (assert (= nil (some #(< 1 %) currGrammar)))
+         (assert (= currGrammar [0,0,0,1,0,1,1,0,0,0,0,0,0])))
+
+    ;Grammar won't change since both 02 and 01 are in the sentence
+    (let [currGrammar (parameter6 [0,0,0,1,0,0,1,0,0,0,0,0,0] ["611", "DEC", ["03", "Adv", "02", "Never", "Verb", "01"]])]
+         (assert (= 13 (count currGrammar)))
+         (assert (= nil (some #(< 1 %) currGrammar)))
+         (assert (= currGrammar [0,0,0,1,0,0,1,0,0,0,0,0,0])))
+
+    ;Grammar won't change since both 02 isn't in the sentence
+    ;while 01 is
+    (let [currGrammar (parameter6 [0,0,0,1,0,0,1,0,0,0,0,0,0] ["611", "DEC", ["03", "Adv", "Aux", "Never", "Verb", "01"]])]
+         (assert (= 13 (count currGrammar)))
+         (assert (= nil (some #(< 1 %) currGrammar)))
+         (assert (= currGrammar [0,0,0,1,0,0,1,0,0,0,0,0,0])))))
+
+
+(deftest parameter7-tests
+  (testing "Testing parameter 7"
+    ;Grammar won't change since the index of +WH is zero
+    (let [currGrammar (parameter7 [0,0,0,1,0,0,1,0,0,0,0,0,0] ["611", "DEC", ["+WH", "Adv", "Aux", "Never", "Verb", "01"]])]
+         (assert (= 13 (count currGrammar)))
+         (assert (= nil (some #(< 1 %) currGrammar)))
+         (assert (= currGrammar [0,0,0,1,0,0,1,0,0,0,0,0,0])))
+   
+    ;Grammar won't change since +WH isn't in the sentence
+    ;while 03[+WH] is
+    (let [currGrammar (parameter7 [0,0,0,1,0,0,1,0,0,0,0,0,0] ["611", "DEC", ["03[+WH]", "Adv", "Aux", "Never", "Verb", "01"]])]
+         (assert (= 13 (count currGrammar)))
+         (assert (= nil (some #(< 1 %) currGrammar)))
+         (assert (= currGrammar [0,0,0,1,0,0,1,0,0,0,0,0,0])))
+
+    ;Grammar will change since +WH's index is greater than zero
+    ;and 03[+WH] isn't in the sentence
+    (let [currGrammar (parameter7 [0,0,0,1,0,0,1,0,0,0,0,0,0] ["611", "DEC", ["S", "+WH", "Adv", "Aux", "Never", "Verb", "01"]])]
+         (assert (= 13 (count currGrammar)))
+         (assert (= nil (some #(< 1 %) currGrammar)))
+         (assert (= currGrammar [0,0,0,1,0,0,0,0,0,0,0,0,0])))))
+

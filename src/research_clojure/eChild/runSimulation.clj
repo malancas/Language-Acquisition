@@ -10,15 +10,15 @@
 (defn writeResults
   "Writes the results of doesChildLearnGrammar? to output file"
   [lines]  
-  (with-open [out-file (clojure.java.io/writer "results.csv")]
+  (with-open [out-file (clojure.java.io/writer "results.csv" :append true)]
     (csv/write-csv out-file
                    lines)))
 
 
 (defn write-test
   [lines]
-  (with-open [out-file (clojure.java.io/writer "out.csv")]
-            (csv/write-csv out-file [[@(get lines 0)] [(get lines 1)]])))
+  (with-open [out-file (clojure.java.io/writer "out.csv" :append true)]
+            (csv/write-csv out-file [[@(get lines 0) (get lines 1)]])))
 
 
 (defn doesChildLearnGrammar?
@@ -29,13 +29,14 @@
   (def grammarLearned (atom false))
   (def sentenceCount (atom 0))
 
-  (def grammar [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1])
+  (def grammar (atom [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1]))
+
   (while (and (not @grammarLearned) (< @sentenceCount max_num))
     (def infoListAndSentence (consumeSentence (rand-nth sentences)))
-    (def currGrammarAndState (setParameters (get infoListAndSentence 0) grammar))
-    (reset! grammarLearned (isGrammarLearned? (get currGrammarAndState 0) (get infoListAndSentence 0)))
+    (reset! grammar (setParameters (get infoListAndSentence 0) grammar))
+    (reset! grammarLearned (isGrammarLearned? grammar (get infoListAndSentence 0)))
     (swap! sentenceCount inc))
-  (write-test currGrammarAndState))
+  (write-test [grammar grammarLearned]))
 
 
 (defn runSimulation
