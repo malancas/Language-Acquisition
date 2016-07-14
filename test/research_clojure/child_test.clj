@@ -276,7 +276,14 @@
       (assert (= 13 (count currGrammar)))
       (assert (= nil (some #(< 1 %) currGrammar)))
       (assert (= currGrammar [0,0,0,1,0,0,1,0,0,1,0,0,0])))
-))
+
+    ;Grammar will change since 01's index is greater than 0
+    ;and Q and Aux are present
+    (let [currGrammar (affixHop_aux2 "Q" ["Aux", "+WA", "P", "01", "Verb", "Never"] [0,0,0,1,0,0,1,0,0,1,0,0,0])]
+      (assert (= 13 (count currGrammar)))
+      (assert (= nil (some #(< 1 %) currGrammar)))
+      (assert (= currGrammar [0,0,0,1,0,0,1,0,0,1,0,1,0])))))
+
 
 (deftest parameter13-tests
   (testing "Testing parameter 13"

@@ -38,6 +38,6 @@
   (def count (atom 0))
   (while (< @count max_eChildren)
     (println "eChild #" @count)
-   (doesChildLearnGrammar? sentences max_sentences)
-   (swap! count inc)))
+    (doesChildLearnGrammar? sentences max_sentences)
+    (swap! count inc)))
 
