@@ -171,3 +171,117 @@
          (assert (= nil (some #(< 1 %) currGrammar)))
          (assert (= currGrammar [0,0,0,1,0,0,0,0,0,0,0,0,0])))))
 
+
+(deftest parameter8-tests
+  (testing "Testing parameter 8"
+    ;Grammar won't change since 03 isn't in the sentence
+    (let [currGrammar (parameter8 [0,0,0,1,0,0,1,0,0,0,0,0,0] ["611", "DEC", ["+WH", "P", "Aux", "Never", "Verb", "01"]])]
+         (assert (= 13 (count currGrammar)))
+         (assert (= nil (some #(< 1 %) currGrammar)))
+         (assert (= currGrammar [0,0,0,1,0,0,1,0,0,0,0,0,0])))
+    
+    ;Grammar will change since P and 03 aren't adjacent
+    (let [currGrammar (parameter8 [0,0,0,1,0,0,1,0,0,0,0,0,0] ["611", "DEC", ["+WH", "P", "Aux", "03", "Verb", "01"]])]
+         (assert (= 13 (count currGrammar)))
+         (assert (= nil (some #(< 1 %) currGrammar)))
+         (assert (= currGrammar [0,0,0,1,0,0,1,1,0,0,0,0,0])))
+    
+    ;Grammar won't change since P and 03 are adjacent
+    (let [currGrammar (parameter8 [0,0,0,1,0,0,1,0,0,0,0,0,0] ["611", "DEC", ["+WH", "03", "P", "Aux", "Verb", "01"]])]
+         (assert (= 13 (count currGrammar)))
+         (assert (= nil (some #(< 1 %) currGrammar)))
+         (assert (= currGrammar [0,0,0,1,0,0,1,0,0,0,0,0,0])))))
+
+
+(deftest parameter9-tests
+  (testing "Testing parameter 9"
+    ;Grammar won't change since WA isn't in the sentence
+    (let [currGrammar (parameter9 [0,0,0,1,0,0,1,0,0,0,0,0,0] ["611", "DEC", ["+WA", "P", "Aux", "03", "Verb", "01"]])]
+         (assert (= 13 (count currGrammar)))
+         (assert (= nil (some #(< 1 %) currGrammar)))
+         (assert (= currGrammar [0,0,0,1,0,0,1,0,0,0,0,0,0])))
+
+    ;Grammar will change since WA is in the sentence
+    (let [currGrammar (parameter9 [0,0,0,1,0,0,1,0,0,0,0,0,0] ["611", "DEC", ["WA", "P", "Aux", "03", "Verb", "01"]])]
+         (assert (= 13 (count currGrammar)))
+         (assert (= nil (some #(< 1 %) currGrammar)))
+         (assert (= currGrammar [0,0,0,1,0,0,1,0,1,0,0,0,0])))
+
+    ;Grammar will change since WA is in the sentence
+    (let [currGrammar (parameter9 [0,0,0,1,0,0,1,0,0,0,0,0,0] ["611", "DEC", ["+WA", "P", "Aux", "03", "Verb", "01", "WA"]])]
+         (assert (= 13 (count currGrammar)))
+         (assert (= nil (some #(< 1 %) currGrammar)))
+         (assert (= currGrammar [0,0,0,1,0,0,1,0,1,0,0,0,0])))))
+
+
+(deftest parameter10-tests
+  (testing "Testing parameter 10"
+    ;Grammar won't change since 01 and Verb are adjacent
+    (let [currGrammar (parameter10 [0,0,0,1,0,0,1,0,0,0,0,0,0] ["611", "DEC", ["+WA", "P", "Aux", "03", "Verb", "01", "WA"]])]
+         (assert (= 13 (count currGrammar)))
+         (assert (= nil (some #(< 1 %) currGrammar)))
+         (assert (= currGrammar [0,0,0,1,0,0,1,0,0,0,0,0,0])))
+
+    ;Grammar will change since 01 and Verb aren't adjacent
+    (let [currGrammar (parameter10 [0,0,0,1,0,0,1,0,0,0,0,0,0] ["611", "DEC", ["+WA", "P", "Aux", "03", "Verb", "WA", "01"]])]
+         (assert (= 13 (count currGrammar)))
+         (assert (= nil (some #(< 1 %) currGrammar)))
+         (assert (= currGrammar [0,0,0,1,0,0,1,0,0,1,0,0,0])))
+
+    ;Grammar won't change since 01's index is 0
+    (let [currGrammar (parameter10 [0,0,0,1,0,0,1,0,0,0,0,0,0] ["611", "DEC", ["01", "+WA", "P", "Aux", "03", "Verb", "WA"]])]
+         (assert (= 13 (count currGrammar)))
+         (assert (= nil (some #(< 1 %) currGrammar)))
+         (assert (= currGrammar [0,0,0,1,0,0,1,0,0,0,0,0,0])))))
+
+
+(deftest parameter12-tests
+  (testing "Testing parameter 12"
+    ;Will return true since "Never Verb 01" is in the sentence
+    ;and checkForNV01 is true
+    (assert (checkForNV01or01VN ["+WA", "P", "Aux", "Never", "Verb", "01"] true))
+
+   ;Will return false since "Never Verb 01" isn't in the sentence
+   ;and checkForNV01 is false
+    (assert (not (checkForNV01or01VN ["+WA", "P", "Aux", "Never", "Verb", "01"] false)))
+
+    ;Will return true since "01 Verb Never" is in the sentence
+    ;and checkForNV01 is false
+    (assert (checkForNV01or01VN ["+WA", "P", "Aux", "01", "Verb", "Never"] false))
+
+   ;Will return false since "01 Verb Never" is in in the sentence
+   ;and checkForNV01 is true
+    (assert (not (checkForNV01or01VN ["+WA", "P", "Aux", "01", "Verb", "Never"] true)))
+
+    ;Grammar will change since DEC and "Never Verb 01" are present
+    (let [currGrammar (affixHop_aux1 "DEC" ["+WA", "P", "Aux", "Never", "Verb", "01"] [0,0,0,1,0,0,1,0,0,1,0,0,0])]
+      (assert (= 13 (count currGrammar)))
+      (assert (= nil (some #(< 1 %) currGrammar)))
+      (assert (= currGrammar [0,0,0,1,0,0,1,0,0,1,0,1,0])))
+
+    ;Grammar will change since Q, Aux, "Never Verb 01" are present
+    (let [currGrammar (affixHop_aux1 "DEC" ["+WA", "P", "Never", "Verb", "01"] [0,0,0,1,0,0,1,0,0,1,0,0,0])]
+      (assert (= 13 (count currGrammar)))
+      (assert (= nil (some #(< 1 %) currGrammar)))
+      (assert (= currGrammar [0,0,0,1,0,0,1,0,0,1,0,1,0])))
+
+    ;Grammar will change since Q, Aux, "Never Verb 01" are present
+    (let [currGrammar (affixHop_aux2 "DEC" ["+WA", "P", "01", "Verb", "Never"] [0,0,0,1,0,0,1,0,0,1,0,0,0])]
+      (assert (= 13 (count currGrammar)))
+      (assert (= nil (some #(< 1 %) currGrammar)))
+      (assert (= currGrammar [0,0,0,1,0,0,1,0,0,1,0,1,0])))
+
+    ;Grammar won't change since 01's index is 0
+    (let [currGrammar (affixHop_aux2 "DEC" ["01", "+WA", "P", "Never", "Verb"] [0,0,0,1,0,0,1,0,0,1,0,0,0])]
+      (assert (= 13 (count currGrammar)))
+      (assert (= nil (some #(< 1 %) currGrammar)))
+      (assert (= currGrammar [0,0,0,1,0,0,1,0,0,1,0,0,0])))
+))
+
+(deftest parameter13-tests
+  (testing "Testing parameter 13"
+    ;Grammar will change since ka is in the sentence
+    (let [currGrammar (parameter13 [0,0,0,1,0,0,1,0,0,0,0,0,1] ["611", "DEC", ["ka", "P", "Aux", "03", "Verb", "WA", "01"]])]
+         (assert (= 13 (count currGrammar)))
+         (assert (= nil (some #(< 1 %) currGrammar)))
+         (assert (= currGrammar [0,0,0,1,0,0,1,0,0,0,0,0,0])))))

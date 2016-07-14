@@ -74,8 +74,8 @@
 
     
 (defn Verb_tensed
-  [sentence x]
-  (or isDeclarative x (and isQuestion x (in? sentence "Aux"))))
+  [sentence senType]
+  (or (isDeclarative senType) (and (isQuestion senType) (in? sentence "Aux"))))
 
 
 (defn S_Aux
@@ -143,14 +143,15 @@
     (do
       (def i (.indexOf sentence "P")) ;Get index of P
       (def j (.indexOf sentence "03")) ;Ge index of 03
-      (if (and (not= i -1) (not= j -1) (not= (Math/abs (- i j)) -1)) ;If they exist, make sure they aren't adjacent
+      ;If they exist, make sure they aren't adjacent
+      (if (not= (Math/abs (- i j)) 1)
         (assoc grammar 7 1)
         grammar))
     grammar))
 
 
 (defn setTopicMark
-  "9ath parameter"
+  "9th parameter"
   [sentence grammar]
   (if (in? sentence "WA")
     (assoc grammar 8 1)
@@ -163,13 +164,14 @@
   (if (and (in? sentence "01") (in? sentence "Verb"))
     (do (def i (.indexOf sentence "01"))
         (def j (.indexOf sentence "Verb"))
-        (if (and (> i 0) (not= j -1) (not= (Math/abs (- i j)) 1))
+        (if (and (> i 0) (not= (Math/abs (- i j)) 1))
           (assoc grammar 9 1)
           grammar))
     grammar))
 
 
 (defn iToC_aux1
+  "11th parameter auxiliary"
   [g0 g1 g2 sentence grammar]
   (if (and (= g0 0) (= g1 0) (= g2 0) (S_Aux sentence))
     (assoc grammar 10 0)
@@ -177,6 +179,7 @@
 
 
 (defn iToC_aux2
+  "11th parameter auxiliary"
   [g0 g1 g2 sentence grammar]
   (if (and (= g0 1) (= g1 1) (= g2 1) (Aux_S sentence))
     (assoc grammar 10 0)
@@ -243,16 +246,30 @@
   (reset! currentGrammar (iToC_aux8 g0 g1 g2 sentence currentGrammar)))
 
 
+(defn checkForNV01or01VN
+  "Checks if either 'Never Verb 01' or 
+  '01 Verb Never' appear in sentence"
+  [sentence checkForNV01]
+  (def n (.indexOf sentence "Never"))
+  (def v (.indexOf sentence "Verb"))
+  (def o (.indexOf sentence "01"))
+  (if (and (not= n -1) (not= v -1) (not= o -1))
+    (if checkForNV01
+      (< n v o)
+      (< o v n))
+    false))
+
+
 (defn affixHop_aux1
   [senType sentence grammar]
-  (if (and (Verb_tensed senType) (in? sentence "Never Verb 01"))
+  (if (and (Verb_tensed sentence senType) (checkForNV01or01VN sentence true))
     (assoc grammar 11 1)
     grammar))
 
 
 (defn affixHop_aux2
   [senType sentence grammar]
-  (if (and (Verb_tensed senType) (> (.indexOf sentence "01") 0) (in? sentence "01 Verb Never"))
+  (if (and (Verb_tensed sentence senType) (> (.indexOf sentence "01") 0) (checkForNV01or01VN sentence false))
     (assoc grammar 11 1)
     grammar))
 
@@ -273,7 +290,7 @@
   "13th parameter"
   [sentence grammar]
   (if (in? sentence "ka")
-    (assoc grammar 12 "0")
+    (assoc grammar 12 0)
     grammar))
 
 
@@ -369,28 +386,28 @@
 (defn parameter8
   [initGrammar infoList]
   (if (= (get initGrammar 7) 0)
-    (setPrepStrand infoList initGrammar)
+    (setPrepStrand (get infoList 2) initGrammar)
     initGrammar))
 
 
 (defn parameter9
   [initGrammar infoList]
   (if (= (get initGrammar 8) 0)
-    (setTopicMark infoList initGrammar)
+    (setTopicMark (get infoList 2) initGrammar)
     initGrammar))
 
 
 (defn parameter10
   [initGrammar infoList]
   (if (= (get initGrammar 9) 0)
-    (vToI infoList initGrammar)
+    (vToI (get infoList 2) initGrammar)
     initGrammar))
 
 
 (defn parameter11
   [initGrammar infoList]
   (if (= (get initGrammar 10) 1)
-    (iToC infoList initGrammar)
+    (iToC (get infoList 2) initGrammar)
     initGrammar))
 
 
@@ -404,15 +421,17 @@
 (defn parameter13
   [initGrammar infoList]
   (if (= (get initGrammar 12) 1)
-    (questionInver infoList initGrammar)
+    (questionInver (get infoList 2) initGrammar)
     initGrammar))
 
 
+;FIX THIS
 (defn isGrammarLearned?
   "Converts the grammar ID to binary and compares it to
   currentGrammar"
   [currentGrammar grammarID]
   (let [dec (int (read-string (get grammarID 0)))]
+    
     (= currentGrammar (Integer/toString dec 2))))
 
 
