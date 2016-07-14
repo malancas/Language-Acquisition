@@ -1,5 +1,6 @@
 (ns research-clojure.eChild.Child)
 (require ['clojure.string :as 'str])
+(require '[clojure.set :refer [union]])
 
 
 (defn in?
@@ -425,14 +426,16 @@
     initGrammar))
 
 
-;FIX THIS
 (defn isGrammarLearned?
   "Converts the grammar ID to binary and compares it to
   currentGrammar"
   [currentGrammar grammarID]
-  (let [dec (int (read-string (get grammarID 0)))]
-    
-    (= currentGrammar (Integer/toString dec 2))))
+  (def binType (str/split (Integer/toString (int (read-string (get grammarID 0))) 2) #""))
+  (if (< (count binType) 13)
+    (do (def tempVec (vec (repeat (- 13 (count binType)) 0)))
+        (def paddedBT (union tempVec binType))
+        (= currentGrammar paddedBT))
+    (= currentGrammar binType)))
 
 
 (comment 
