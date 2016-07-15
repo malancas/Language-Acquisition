@@ -21,7 +21,6 @@
   [sentences max_num]
   (def grammarLearned (atom false))
   (def sentenceCount (atom 0))
-
   (def grammar (atom [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1]))
 
   (while (and (not @grammarLearned) (< @sentenceCount max_num))

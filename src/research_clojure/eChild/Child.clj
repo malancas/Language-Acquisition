@@ -457,23 +457,23 @@
   "Passes the initial grammar through each of the parameter
   functions, which will determine how to change the eChild's
   grammar based on its sentence content and structure"
-  [infoList initGrammar]
+  [infoList currentGrammar]
   
-  (def currentGrammar (atom []))
+  ;(def currentGrammar (atom initGrammar))
 
-  (reset! currentGrammar (parameter1 initGrammar infoList))
-  (reset! currentGrammar (parameter2 currentGrammar infoList))
-  (reset! currentGrammar (parameter3 currentGrammar infoList))
-  (reset! currentGrammar (parameter4 currentGrammar infoList))
-  (reset! currentGrammar (parameter5 currentGrammar infoList))
-  (reset! currentGrammar (parameter6 currentGrammar infoList))
-  (reset! currentGrammar (parameter7 currentGrammar infoList))
-  (reset! currentGrammar (parameter8 currentGrammar infoList))
-  (reset! currentGrammar (parameter9 currentGrammar infoList))
-  (reset! currentGrammar (parameter10 currentGrammar infoList))
-  (reset! currentGrammar (parameter11 currentGrammar infoList))
-  (reset! currentGrammar (parameter12 currentGrammar infoList))
-  (reset! currentGrammar (parameter13 currentGrammar infoList)))
+  (reset! currentGrammar (parameter1 @currentGrammar infoList))
+  (reset! currentGrammar (parameter2 @currentGrammar infoList))
+  (reset! currentGrammar (parameter3 @currentGrammar infoList))
+  (reset! currentGrammar (parameter4 @currentGrammar infoList))
+  (reset! currentGrammar (parameter5 @currentGrammar infoList))
+  (reset! currentGrammar (parameter6 @currentGrammar infoList))
+  (reset! currentGrammar (parameter7 @currentGrammar infoList))
+  (reset! currentGrammar (parameter8 @currentGrammar infoList))
+  (reset! currentGrammar (parameter9 @currentGrammar infoList))
+  (reset! currentGrammar (parameter10 @currentGrammar infoList))
+  (reset! currentGrammar (parameter11 @currentGrammar infoList))
+  (reset! currentGrammar (parameter12 @currentGrammar infoList))
+  (reset! currentGrammar (parameter13 @currentGrammar infoList)))
 
 
 (defn consumeSentence

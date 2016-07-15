@@ -18,6 +18,8 @@
          (assert (= 13 (count currGrammar)))
          (assert (= nil (some #(< 1 %) currGrammar)))
          (assert (= currGrammar [0,0,0,1,0,1,1,0,0,0,0,0,0])))
+
+    (println (parameter1 [0,0,0,1,0,1,1,0,0,0,0,0,0] ["611", "DEC", ["Adv", "S", "Aux", "Never", "Verb"]]))
     
     ;The grammar will change since 01 appears before S appears
     ;in the sentence and the index of 01 is greater than zero

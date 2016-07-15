@@ -2,6 +2,7 @@
 (require 'research-clojure.eChild.runSimulation)
 (refer 'research-clojure.eChild.runSimulation)
 (require '[clojure.data.csv :as csv])
+(require '[clojure.tools.cli :refer [cli]])
 
 
 ;Used to read in the sentence file
