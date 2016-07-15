@@ -3,7 +3,7 @@
 (require '[clojure.set :refer [union]])
 
 
-(defn in?
+(defn inSentence?
   "Returns true if e is an element of sentence"
   [sentence e]
   (= e (some #{e} sentence)))
@@ -21,7 +21,7 @@
 
 (defn hasKa
   [sen]
-  (in? sen "ka"))
+  (inSentence? sen "ka"))
 
 
 (defn Aux_Verb
@@ -76,7 +76,7 @@
     
 (defn Verb_tensed
   [sentence senType]
-  (or (isDeclarative senType) (and (isQuestion senType) (in? sentence "Aux"))))
+  (or (isDeclarative senType) (and (isQuestion senType) (inSentence? sentence "Aux"))))
 
 
 (defn S_Aux
@@ -100,7 +100,7 @@
   [infoList grammar]
   (if (isDeclarative (get infoList 1))
     (do (let [sentence (get infoList 2)]
-          (if (and (in? sentence "02") (not (in? sentence "01")))
+          (if (and (inSentence? sentence "02") (not (inSentence? sentence "01")))
             (do (let [tempGrammar (assoc grammar 5 1)]
                 (if (= (get tempGrammar 3) 1)
                   (assoc tempGrammar 3 0)
@@ -116,7 +116,7 @@
   Only works for full, not 
   necessarily with CHILDES distribution"
   [infoList grammar]
-  (if (and (isDeclarative (get infoList 1)) (not (in? (get infoList 2) "S")) (outOblique (get infoList 2)))
+  (if (and (isDeclarative (get infoList 1)) (not (inSentence? (get infoList 2) "S")) (outOblique (get infoList 2)))
     (assoc grammar 4 1)
     grammar))
 
@@ -124,7 +124,7 @@
 (defn setNullTopic
   "6th parameter"
   [sentence grammar]
-  (if (and (in? sentence "02") (not (in? sentence "01")))
+  (if (and (inSentence? sentence "02") (not (inSentence? sentence "01")))
     (assoc grammar 5 1)
     grammar))
 
@@ -132,7 +132,7 @@
 (defn setWHMovement
   "7th parameter"
   [sentence grammar]
-  (if (and (> (.indexOf sentence "+WH") 0) (not (in? sentence "03[+WH]")))
+  (if (and (> (.indexOf sentence "+WH") 0) (not (inSentence? sentence "03[+WH]")))
     (assoc grammar 6 0)
     grammar))
 
@@ -140,7 +140,7 @@
 (defn setPrepStrand
   "8th parameter"
   [sentence grammar]
-  (if (and (in? sentence "P") (in? sentence "03"))
+  (if (and (inSentence? sentence "P") (inSentence? sentence "03"))
     (do
       (def i (.indexOf sentence "P")) ;Get index of P
       (def j (.indexOf sentence "03")) ;Ge index of 03
@@ -154,7 +154,7 @@
 (defn setTopicMark
   "9th parameter"
   [sentence grammar]
-  (if (in? sentence "WA")
+  (if (inSentence? sentence "WA")
     (assoc grammar 8 1)
     grammar))
 
@@ -162,7 +162,7 @@
 (defn vToI
   "10th parameter"
   [sentence grammar]
-  (if (and (in? sentence "01") (in? sentence "Verb"))
+  (if (and (inSentence? sentence "01") (inSentence? sentence "Verb"))
     (do (def i (.indexOf sentence "01"))
         (def j (.indexOf sentence "Verb"))
         (if (and (> i 0) (not= (Math/abs (- i j)) 1))
@@ -290,14 +290,14 @@
 (defn questionInver
   "13th parameter"
   [sentence grammar]
-  (if (in? sentence "ka")
+  (if (inSentence? sentence "ka")
     (assoc grammar 12 0)
     grammar))
 
 
 (defn setSubjPos
   [grammar sen]
-  (if (and (in? sen "01") (in? sen "S"))
+  (if (and (inSentence? sen "01") (inSentence? sen "S"))
     ;Check if 01 and S are in the sentence
     (do (let [first (.indexOf sen "01")]
          (if (and (> first 0) (< first (.indexOf sen "S")))
@@ -310,7 +310,7 @@
   "Checks if both 03 and P are present in the sentence
   and if they appear sequentially"
   [infoList initGrammar]
-  (if (and (not= nil (in? (get infoList 2) "03")) (not= nil (in? (get infoList 2) "P")))
+  (if (and (not= nil (inSentence? (get infoList 2) "03")) (not= nil (inSentence? (get infoList 2) "P")))
     (do (def first (.indexOf (get infoList 2) "03"))
         ;If 03 followed by P
             (if (and (> first 0) (= (.indexOf (get infoList 2) "P") (+ first 1)))
@@ -322,7 +322,7 @@
 (defn setHead_aux2
   "If imperative, make sure Verb directly follow 01"
   [infoList initGrammar]
-  (if (and (isImperative (get infoList 1)) (in? (get infoList 2) "01") (in? (get infoList 2) "Verb"))
+  (if (and (isImperative (get infoList 1)) (inSentence? (get infoList 2) "01") (inSentence? (get infoList 2) "Verb"))
      (if (= (.indexOf (get infoList 2) "01") (- (.indexOf (get infoList 2) "Verb") 1))
        (assoc initGrammar 1 1)
        initGrammar)
@@ -430,12 +430,14 @@
   "Converts the grammar ID to binary and compares it to
   currentGrammar"
   [currentGrammar grammarID]
+
   (def binType (str/split (Integer/toString (int (read-string (get grammarID 0))) 2) #""))
+
   (if (< (count binType) 13)
     (do (def tempVec (vec (repeat (- 13 (count binType)) 0)))
         (def paddedBT (union tempVec binType))
-        (= currentGrammar paddedBT))
-    (= currentGrammar binType)))
+        (= @currentGrammar paddedBT))
+    (= @currentGrammar binType)))
 
 
 (comment 
@@ -458,8 +460,8 @@
   functions, which will determine how to change the eChild's
   grammar based on its sentence content and structure"
   [infoList currentGrammar]
-  
-  ;(def currentGrammar (atom initGrammar))
+
+  ;(println @currentGrammar)
 
   (reset! currentGrammar (parameter1 @currentGrammar infoList))
   (reset! currentGrammar (parameter2 @currentGrammar infoList))
@@ -478,8 +480,6 @@
 
 (defn consumeSentence
   "Creates the infoList list that is used in setParameters"
-  [sen]
-  (def info (clojure.string/join " " sen))
-  (def infoList (clojure.string/split info #" " 3))
-  [infoList, (clojure.string/split (get infoList 2) #" ")])
+  [sentenceInfo]
+  [(get sentenceInfo 0) (get sentenceInfo 1) (clojure.string/split (get sentenceInfo 2) #"\s")])
 

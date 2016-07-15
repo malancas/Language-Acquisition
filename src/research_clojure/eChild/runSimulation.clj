@@ -24,9 +24,10 @@
   (def grammar (atom [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1]))
 
   (while (and (not @grammarLearned) (< @sentenceCount max_num))
-    (def infoListAndSentence (consumeSentence (rand-nth sentences)))
-    (reset! grammar (setParameters (get infoListAndSentence 0) grammar))
-    (reset! grammarLearned (isGrammarLearned? @grammar (get infoListAndSentence 0)))
+    (def infoList1 (consumeSentence (rand-nth sentences)))
+
+    (reset! grammar (setParameters infoList1 grammar))
+    (reset! grammarLearned (isGrammarLearned? @grammar infoList1))
     (swap! sentenceCount inc))
   (writeResults [@grammar @grammarLearned]))
 
