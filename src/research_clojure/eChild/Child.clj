@@ -2,7 +2,6 @@
 (require ['clojure.string :as 'str])
 (require '[clojure.set :refer [union]])
 
-
 (defn inSentence?
   "Returns true if e is an element of sentence"
   [sentence e]
@@ -481,5 +480,5 @@
 (defn consumeSentence
   "Creates the infoList list that is used in setParameters"
   [sentenceInfo]
-  [(get sentenceInfo 0) (get sentenceInfo 1) (clojure.string/split (get sentenceInfo 2) #"\s")])
+  (assoc sentenceInfo 2 (str/split (get sentenceInfo 2) #"\s")))
 
