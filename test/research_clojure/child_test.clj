@@ -3,12 +3,12 @@
             [research-clojure.eChild.Child :refer :all]))
 
 
-(deftest in?-tests
+(deftest inSentence?-tests
   (testing "Testing in?"
     (def x ["80", "Q", ["Adv", "03", "P", "S"]])
-    (assert (in? (get x 2) "P"))
-    (assert (in? (get x 2) "03"))
-    (assert (not (in? (get x 2) "01")))))
+    (assert (inSentence? (get x 2) "P"))
+    (assert (inSentence? (get x 2) "03"))
+    (assert (not (inSentence? (get x 2) "01")))))
 
 (deftest parameter1-tests
   (testing "Testing parameter1"
@@ -19,7 +19,9 @@
          (assert (= nil (some #(< 1 %) currGrammar)))
          (assert (= currGrammar [0,0,0,1,0,1,1,0,0,0,0,0,0])))
 
-    (println (parameter1 [0,0,0,1,0,1,1,0,0,0,0,0,0] ["611", "DEC", ["Adv", "S", "Aux", "Never", "Verb"]]))
+    (def x (atom [0,0,0,1,0,1,1,0,0,0,0,0,0]))
+    (reset! x (parameter1 @x ["611" "DEC" ["Adv" "S" "Aux" "Never" "Verb"]]))
+    (println @x)
     
     ;The grammar will change since 01 appears before S appears
     ;in the sentence and the index of 01 is greater than zero

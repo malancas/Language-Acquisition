@@ -62,10 +62,9 @@
   (def l (.indexOf sentence "03"))
   
   (if (and (not= i -1) (not= j -1) (not= k -1) (< i j k) (or (and (< i j k) (= l (+ k 1))) (and (< l j i) (= k (+ l 1)))))
-    false)
-
-  (if (and (not= i -1) (not= j -1) (not= k -1) (not= l -1))
-    true))
+    false
+    (if (and (not= i -1) (not= j -1) (not= k -1) (not= l -1))
+      true)))
 
 
 (defn isQuestion
@@ -230,20 +229,19 @@
 
 (defn iToC
   "11th parameter"
-  [sentence grammar]
-  (def g0 (get grammar 0))
-  (def g1 (get grammar 1))
-  (def g2 (get grammar 2))
-  (def currentGrammar (atom grammar))
+  [sentence currentGrammar]
+  (def g0 (get @currentGrammar 0))
+  (def g1 (get @currentGrammar 1))
+  (def g2 (get @currentGrammar 2))
 
-  (reset! currentGrammar (iToC_aux1 g0 g1 g2 sentence currentGrammar))
-  (reset! currentGrammar (iToC_aux2 g0 g1 g2 sentence currentGrammar))
-  (reset! currentGrammar (iToC_aux3 g0 g1 g2 sentence currentGrammar))  
-  (reset! currentGrammar (iToC_aux4 g0 g1 g2 sentence currentGrammar)) 
-  (reset! currentGrammar (iToC_aux5 g0 g1 g2 sentence currentGrammar)) 
-  (reset! currentGrammar (iToC_aux6 g0 g1 g2 sentence currentGrammar)) 
-  (reset! currentGrammar (iToC_aux7 g0 g1 g2 sentence currentGrammar))
-  (reset! currentGrammar (iToC_aux8 g0 g1 g2 sentence currentGrammar)))
+  (reset! currentGrammar (iToC_aux1 g0 g1 g2 sentence @currentGrammar))
+  (reset! currentGrammar (iToC_aux2 g0 g1 g2 sentence @currentGrammar))
+  (reset! currentGrammar (iToC_aux3 g0 g1 g2 sentence @currentGrammar))
+  (reset! currentGrammar (iToC_aux4 g0 g1 g2 sentence @currentGrammar))
+  (reset! currentGrammar (iToC_aux5 g0 g1 g2 sentence @currentGrammar)) 
+  (reset! currentGrammar (iToC_aux6 g0 g1 g2 sentence @currentGrammar))
+  (reset! currentGrammar (iToC_aux7 g0 g1 g2 sentence @currentGrammar))
+  (reset! currentGrammar (iToC_aux8 g0 g1 g2 sentence @currentGrammar)))
 
 
 (defn checkForNV01or01VN
@@ -279,11 +277,9 @@
   [infoList initGrammar]
   (def senType (get infoList 1))
   (def sentence (get infoList 2))
-  (def currentGrammar (atom initGrammar))
 
-  (reset! currentGrammar (affixHop_aux1 senType sentence currentGrammar))
-  (reset! currentGrammar (affixHop_aux2 senType sentence currentGrammar))
-  currentGrammar)
+  (reset! initGrammar (affixHop_aux1 senType sentence @initGrammar))
+  (reset! initGrammar (affixHop_aux2 senType sentence @initGrammar)))
 
   
 (defn questionInver
@@ -406,16 +402,16 @@
 
 (defn parameter11
   [initGrammar infoList]
-  (if (= (get initGrammar 10) 1)
+  (if (= (get @initGrammar 10) 1)
     (iToC (get infoList 2) initGrammar)
     initGrammar))
 
 
 (defn parameter12
   [initGrammar infoList]
-  (if (= (get initGrammar 11) 0)
+  (if (= (get @initGrammar 11) 0)
     (affixHop infoList initGrammar)
-    initGrammar))
+    @initGrammar))
 
 
 (defn parameter13
@@ -460,8 +456,6 @@
   grammar based on its sentence content and structure"
   [infoList currentGrammar]
 
-  ;(println @currentGrammar)
-
   (reset! currentGrammar (parameter1 @currentGrammar infoList))
   (reset! currentGrammar (parameter2 @currentGrammar infoList))
   (reset! currentGrammar (parameter3 @currentGrammar infoList))
@@ -472,13 +466,17 @@
   (reset! currentGrammar (parameter8 @currentGrammar infoList))
   (reset! currentGrammar (parameter9 @currentGrammar infoList))
   (reset! currentGrammar (parameter10 @currentGrammar infoList))
-  (reset! currentGrammar (parameter11 @currentGrammar infoList))
-  (reset! currentGrammar (parameter12 @currentGrammar infoList))
-  (reset! currentGrammar (parameter13 @currentGrammar infoList)))
+  (reset! currentGrammar (parameter11 currentGrammar infoList))
+  (reset! currentGrammar (parameter12 currentGrammar infoList))
+  (reset! currentGrammar (parameter13 @currentGrammar infoList))
+  currentGrammar)
 
 
 (defn consumeSentence
-  "Creates the infoList list that is used in setParameters"
+  "Creates infoList that is used in setParameters.
+  Consisting of three elements, the first is the language ID,
+  the second is the sentence type, and the third is a vector
+  containing the sentence"
   [sentenceInfo]
   (assoc sentenceInfo 2 (str/split (get sentenceInfo 2) #"\s")))
 
