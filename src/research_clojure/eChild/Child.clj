@@ -74,7 +74,7 @@
     
 (defn Verb_tensed
   [sentence senType]
-  (or (isDeclarative senType) (and (isQuestion senType) (inSentence? sentence "Aux"))))
+  (and (or (isDeclarative senType) (isQuestion senType)) (not (inSentence? sentence "Aux"))))
 
 
 (defn S_Aux
@@ -430,8 +430,8 @@
 
   (if (< (count binType) 13)
     (do (def tempVec (vec (repeat (- 13 (count binType)) 0)))
-        (def paddedBT (union tempVec binType))
-        (= @currentGrammar paddedBT))
+      (def paddedBT (concat tempVec binType))
+      (= @currentGrammar paddedBT))
     (= @currentGrammar binType)))
 
 

@@ -21,7 +21,8 @@
 (defn chooseSentences
   "Iterates through sentences, containing all sentences,
   and adds sentences with grammar IDs matching gID
-  to a new vector"
+  to a new vector.
+  French=584, English=611, German=2253, Japanese=3856"
   [sentences gID]
   (loop [remainingSentences sentences chosenSentences []]
     (if (empty? remainingSentences)
