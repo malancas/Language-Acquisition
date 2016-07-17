@@ -468,8 +468,7 @@
   (reset! currentGrammar (parameter10 @currentGrammar infoList))
   (reset! currentGrammar (parameter11 currentGrammar infoList))
   (reset! currentGrammar (parameter12 currentGrammar infoList))
-  (reset! currentGrammar (parameter13 @currentGrammar infoList))
-  currentGrammar)
+  (reset! currentGrammar (parameter13 @currentGrammar infoList)))
 
 
 (defn consumeSentence

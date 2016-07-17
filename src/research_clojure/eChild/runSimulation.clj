@@ -26,8 +26,9 @@
   (while (and (not @grammarLearned) (< @sentenceCount max_num))
     (def infoList1 (consumeSentence (rand-nth sentences)))
     (reset! grammar (setParameters infoList1 grammar))
+    (println "G " @grammar)
 
-    (reset! grammarLearned (isGrammarLearned? @grammar infoList1))
+    (reset! grammarLearned (isGrammarLearned? grammar infoList1))
     (swap! sentenceCount inc))
   (writeResults [@grammar @grammarLearned]))
 
