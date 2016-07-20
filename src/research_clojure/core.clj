@@ -2,7 +2,7 @@
 (require 'research-clojure.eChild.runSimulation)
 (refer 'research-clojure.eChild.runSimulation)
 (require '[clojure.data.csv :as csv])
-(require '[clojure.tools.cli :refer [cli]])
+(:require [clojure.tools.cli :refer [parse-opts]])
 
 
 ;Used to read in the sentence file
@@ -38,14 +38,19 @@
   "Loads the sentence file contents int to
   memory and creates a file of selected sentences
   based on a chosen grammar ID"
-  []
-
-  (println "Load file from memory")
-  (def allSentences (readFile "EngFrJapGerm.txt"))
-  ;Sentences with the grammar ID 611 are copied into
-  ;the selectedSentences vector
-  (def selectedSentences (chooseSentences allSentences "611"))
-  (runSimulation selectedSentences 100 1000))
+  [& args]
+  (def arguments (get (parse-opts args) 1))
+  (if (not= 3 (count arguments))
+    (do (println "Not enough arguments entered at command line")
+      (System/exit 0))
+    (if (not (and (>= (get arguments 0) 0) (>= (get arguments 1) 0) (>= (get arguments 2) 0)))
+      (println "All arguments must be integers equal or greater than zero")
+      (do   (println "Load file from memory")
+            (def allSentences (readFile "EngFrJapGerm.txt"))
+            ;Sentences with the grammar ID 611 are copied into
+            ;the selectedSentences vector
+            (def selectedSentences (chooseSentences allSentences "611"))
+            (runSimulation selectedSentences 100 1000)))))
 
 
 
