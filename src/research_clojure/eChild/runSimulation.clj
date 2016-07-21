@@ -36,9 +36,9 @@
 (defn runSimulation
   [sentences max_eChildren max_sentences]
   (io/delete-file "out.csv" :silently true)
-  (def count (atom 0))
-  (while (< @count max_eChildren)
-    (println "eChild #" @count)
+  (def counter (atom 0))
+  (while (< @counter max_eChildren)
+    (println "eChild #" @counter)
     (doesChildLearnGrammar? sentences max_sentences)
-    (swap! count inc)))
+    (swap! counter inc)))
 
