@@ -56,15 +56,15 @@
 
 (defn outOblique
   [sentence]
-  (def i (.indexOf sentence "01"))
-  (def j (.indexOf sentence "02"))
-  (def k (.indexOf sentence "P"))
-  (def l (.indexOf sentence "03"))
-  
-  (if (and (not= i -1) (not= j -1) (not= k -1) (< i j k) (or (and (< i j k) (= l (+ k 1))) (and (< l j i) (= k (+ l 1)))))
-    false
-    (if (and (not= i -1) (not= j -1) (not= k -1) (not= l -1))
-      true)))
+  (let [i (.indexOf sentence "01")
+        j (.indexOf sentence "02")
+        k (.indexOf sentence "P")
+        l (.indexOf sentence "03")]
+
+      (if (and (not= i -1) (not= j -1) (not= k -1) (< i j k) (or (and (< i j k) (= l (+ k 1))) (and (< l j i) (= k (+ l 1)))))
+        false
+        (if (and (not= i -1) (not= j -1) (not= k -1) (not= l -1))
+          true))))
 
 
 (defn isQuestion
@@ -140,13 +140,15 @@
   [sentence grammar]
   (if (and (inSentence? sentence "P") (inSentence? sentence "03"))
     (do
-      (def i (.indexOf sentence "P")) ;Get index of P
-      (def j (.indexOf sentence "03")) ;Ge index of 03
+      (let [i (.indexOf sentence "P")   ;Get index of P
+            j (.indexOf sentence "03")] ;Get index of 03
+
       ;If they exist, make sure they aren't adjacent
       (if (not= (Math/abs (- i j)) 1)
         (assoc grammar 7 1)
-        grammar))
+        grammar)))
     grammar))
+
 
 
 (defn setTopicMark
