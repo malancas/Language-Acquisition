@@ -45,13 +45,13 @@
 
 (defn containsTopicalizable
   [sentence]
-  (def i (.indexOf sentence "S"))
-  (def j (.indexOf sentence "01"))
-  (def k (.indexOf sentence "02"))
-  (def l (.indexOf sentence "03"))
-  (def m (.indexOf sentence "Adv"))
-  
-  (or (= i 0) (= j 0) (= k 0) (= l 0) (= m 0)))
+  (let [i (.indexOf sentence "S")
+        j (.indexOf sentence "01")
+        k (.indexOf sentence "02")
+        l (.indexOf sentence "03")
+        m (.indexOf sentence "Adv")]
+    
+    (or (= i 0) (= j 0) (= k 0) (= l 0) (= m 0))))
 
 
 (defn outOblique
@@ -100,9 +100,9 @@
     (do (let [sentence (get infoList 2)]
           (if (and (inSentence? sentence "02") (not (inSentence? sentence "01")))
             (do (let [tempGrammar (assoc grammar 5 1)]
-                (if (= (get tempGrammar 3) 1)
-                  (assoc tempGrammar 3 0)
-                  tempGrammar)))
+                 (if (= (get tempGrammar 3) 1)
+                   (assoc tempGrammar 3 0)
+                   tempGrammar)))
             (if (containsTopicalizable sentence)
               (assoc grammar 3 1)
               grammar))))
@@ -230,18 +230,18 @@
 (defn iToC
   "11th parameter"
   [sentence currentGrammar]
-  (def g0 (get @currentGrammar 0))
-  (def g1 (get @currentGrammar 1))
-  (def g2 (get @currentGrammar 2))
+  
+  (let [[g0 g1 g2] (take 3 currentGrammar)]
 
-  (reset! currentGrammar (iToC_aux1 g0 g1 g2 sentence @currentGrammar))
-  (reset! currentGrammar (iToC_aux2 g0 g1 g2 sentence @currentGrammar))
-  (reset! currentGrammar (iToC_aux3 g0 g1 g2 sentence @currentGrammar))
-  (reset! currentGrammar (iToC_aux4 g0 g1 g2 sentence @currentGrammar))
-  (reset! currentGrammar (iToC_aux5 g0 g1 g2 sentence @currentGrammar)) 
-  (reset! currentGrammar (iToC_aux6 g0 g1 g2 sentence @currentGrammar))
-  (reset! currentGrammar (iToC_aux7 g0 g1 g2 sentence @currentGrammar))
-  (reset! currentGrammar (iToC_aux8 g0 g1 g2 sentence @currentGrammar)))
+    (->> currentGrammar
+        (iToC_aux1 g0 g1 g2 sentence ,,,)
+        (iToC_aux2 g0 g1 g2 sentence ,,,)
+        (iToC_aux3 g0 g1 g2 sentence ,,,)
+        (iToC_aux4 g0 g1 g2 sentence ,,,)
+        (iToC_aux5 g0 g1 g2 sentence ,,,)
+        (iToC_aux6 g0 g1 g2 sentence ,,,)
+        (iToC_aux7 g0 g1 g2 sentence ,,,)
+        (iToC_aux8 g0 g1 g2 sentence ,,,))))
 
 
 (defn checkForNV01or01VN
@@ -275,11 +275,12 @@
 (defn affixHop
   "12th parameter"
   [infoList initGrammar]
-  (def senType (get infoList 1))
-  (def sentence (get infoList 2))
 
-  (reset! initGrammar (affixHop_aux1 senType sentence @initGrammar))
-  (reset! initGrammar (affixHop_aux2 senType sentence @initGrammar)))
+  (let [[senType sentence] (subvec infoList 1)]
+
+    (->> initGrammar
+         (affixHop_aux1 senType sentence ,,,)
+         (affixHop_aux2 senType sentence ,,,))))
 
   
 (defn questionInver
@@ -308,9 +309,9 @@
   (if (and (not= nil (inSentence? (get infoList 2) "03")) (not= nil (inSentence? (get infoList 2) "P")))
     (do (def first (.indexOf (get infoList 2) "03"))
         ;If 03 followed by P
-            (if (and (> first 0) (= (.indexOf (get infoList 2) "P") (+ first 1)))
-              (assoc initGrammar 1 1)
-              initGrammar))
+        (if (and (> first 0) (= (.indexOf (get infoList 2) "P") (+ first 1)))
+          (assoc initGrammar 1 1)
+          initGrammar))
     initGrammar))
 
 
@@ -402,16 +403,16 @@
 
 (defn parameter11
   [initGrammar infoList]
-  (if (= (get @initGrammar 10) 1)
+  (if (= (get initGrammar 10) 1)
     (iToC (get infoList 2) initGrammar)
     initGrammar))
 
 
 (defn parameter12
   [initGrammar infoList]
-  (if (= (get @initGrammar 11) 0)
+  (if (= (get initGrammar 11) 0)
     (affixHop infoList initGrammar)
-    @initGrammar))
+    initGrammar))
 
 
 (defn parameter13
@@ -446,8 +447,8 @@
         (if (empty? remainingFuncs)
           [currentGrammar, (isGrammarLearned? currentGrammar infoList)]
           (let [[func & remaining] remainingFuncs]
-            (recur (reset! currentGrammar (func infoList currentGrammar))))))))
-)
+            (recur (reset! currentGrammar (func infoList currentGrammar)))))))))
+
 
 
 (defn setParameters
@@ -456,19 +457,21 @@
   grammar based on its sentence content and structure"
   [infoList currentGrammar]
 
-  (reset! currentGrammar (parameter1 @currentGrammar infoList))
-  (reset! currentGrammar (parameter2 @currentGrammar infoList))
-  (reset! currentGrammar (parameter3 @currentGrammar infoList))
-  (reset! currentGrammar (parameter4 @currentGrammar infoList))
-  (reset! currentGrammar (parameter5 @currentGrammar infoList))
-  (reset! currentGrammar (parameter6 @currentGrammar infoList))
-  (reset! currentGrammar (parameter7 @currentGrammar infoList))
-  (reset! currentGrammar (parameter8 @currentGrammar infoList))
-  (reset! currentGrammar (parameter9 @currentGrammar infoList))
-  (reset! currentGrammar (parameter10 @currentGrammar infoList))
-  (reset! currentGrammar (parameter11 currentGrammar infoList))
-  (reset! currentGrammar (parameter12 currentGrammar infoList))
-  (reset! currentGrammar (parameter13 @currentGrammar infoList)))
+  (reset! currentGrammar   
+      (-> @currentGrammar       
+          (parameter1 ,,, infoList)
+          (parameter2 ,,, infoList)
+          (parameter3 ,,, infoList)
+          (parameter4 ,,, infoList)
+          (parameter5 ,,, infoList)
+          (parameter6 ,,, infoList)
+          (parameter7 ,,, infoList)
+          (parameter8 ,,, infoList)
+          (parameter9 ,,, infoList)
+          (parameter10 ,,, infoList)
+          (parameter11 ,,, infoList)
+          (parameter12 ,,, infoList)
+          (parameter13 ,,, infoList))))
 
 
 (defn consumeSentence
