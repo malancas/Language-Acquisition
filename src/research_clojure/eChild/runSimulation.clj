@@ -19,26 +19,28 @@
   correct grammar is learned or the maximum number
   of sentences are processed. Needs infoList, grammar, expected grammar"
   [sentences max_num]
-  (def grammarLearned (atom false))
-  (def sentenceCount (atom 0))
-  (def grammar (atom [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1]))
 
-  (while (and (not @grammarLearned) (< @sentenceCount max_num))
-    (def infoList1 (consumeSentence (rand-nth sentences)))
-    (reset! grammar (setParameters infoList1 grammar))
-    (reset! grammarLearned (isGrammarLearned? grammar infoList1))
-    (swap! sentenceCount inc))
+  (let [grammarLearned (atom false)
+        sentenceCount (atom 0)
+        grammar (atom [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1])]
 
-  (println "Final grammar: " @grammar)
-  (writeResults [@grammar @grammarLearned]))
+        (while (and (not @grammarLearned) (< @sentenceCount max_num))
+          (let [infoList1 (consumeSentence (rand-nth sentences))]
+            (reset! grammar (setParameters infoList1 grammar))
+            (reset! grammarLearned (isGrammarLearned? grammar infoList1)))
+          (swap! sentenceCount inc))
+
+        (println "Final grammar: " @grammar)
+        (writeResults [@grammar @grammarLearned])))
 
 
 (defn runSimulation
   [sentences max_eChildren max_sentences]
   (io/delete-file "out.csv" :silently true)
-  (def counter (atom 0))
-  (while (< @counter max_eChildren)
-    (println "eChild #" @counter)
-    (doesChildLearnGrammar? sentences max_sentences)
-    (swap! counter inc)))
+
+  (let [counter (atom 0)]
+    (while (< @counter max_eChildren)
+      (println "eChild #" @counter)
+      (doesChildLearnGrammar? sentences max_sentences)
+      (swap! counter inc))))
 
