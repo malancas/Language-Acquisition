@@ -47,11 +47,15 @@
       (if (not (and (>= (get arguments 0) 0) (>= (get arguments 1) 0) (>= (get arguments 2) 0)))
         (println "All arguments must be integers equal or greater than zero")
         (do   (println "Load file from memory")
-            (def allSentences (readFile "EngFrJapGerm.txt"))
-            ;Sentences with the grammar ID 611 are copied into
-            ;the selectedSentences vector
-            (def selectedSentences (chooseSentences allSentences (str (get arguments 2))))
-            (runSimulation selectedSentences (get arguments 0) (get arguments 1)))))))
+
+            (let [allSentences (readFile "EngFrJapGerm.txt")]
+
+              ;Sentences with the grammar ID 611 are copied into
+              ;the selectedSentences vector
+              (let [selectedSentences (chooseSentences allSentences (str (get arguments 2)))]
+                (if (empty? selectedSentences)
+                  (println "There are no sentences with the selected grammarID")
+                  (runSimulation selectedSentences (get arguments 0) (get arguments 1))))))))))
 
 
 
