@@ -163,11 +163,12 @@
   "10th parameter"
   [sentence grammar]
   (if (and (inSentence? sentence "01") (inSentence? sentence "Verb"))
-    (do (def i (.indexOf sentence "01"))
-        (def j (.indexOf sentence "Verb"))
-        (if (and (> i 0) (not= (Math/abs (- i j)) 1))
-          (assoc grammar 9 1)
-          grammar))
+    (do (let [i (.indexOf sentence "01")
+              j (.indexOf sentence "Verb")]
+
+          (if (and (> i 0) (not= (Math/abs (- i j)) 1))
+            (assoc grammar 9 1)
+            grammar)))
     grammar))
 
 
@@ -250,14 +251,16 @@
   "Checks if either 'Never Verb 01' or 
   '01 Verb Never' appear in sentence"
   [sentence checkForNV01]
-  (def n (.indexOf sentence "Never"))
-  (def v (.indexOf sentence "Verb"))
-  (def o (.indexOf sentence "01"))
-  (if (and (not= n -1) (not= v -1) (not= o -1))
-    (if checkForNV01
-      (< n v o)
-      (< o v n))
-    false))
+
+  (let [n (.indexOf sentence "Never")
+        v (.indexOf sentence "Verb")  
+        o (.indexOf sentence "01")]
+
+        (if (and (not= n -1) (not= v -1) (not= o -1))
+          (if checkForNV01
+            (< n v o)
+            (< o v n))
+          false)))
 
 
 (defn affixHop_aux1
@@ -309,11 +312,11 @@
   and if they appear sequentially"
   [infoList initGrammar]
   (if (and (not= nil (inSentence? (get infoList 2) "03")) (not= nil (inSentence? (get infoList 2) "P")))
-    (do (def first (.indexOf (get infoList 2) "03"))
+    (do (let [first (.indexOf (get infoList 2) "03")]
         ;If 03 followed by P
         (if (and (> first 0) (= (.indexOf (get infoList 2) "P") (+ first 1)))
           (assoc initGrammar 1 1)
-          initGrammar))
+          initGrammar)))
     initGrammar))
 
 
@@ -429,13 +432,13 @@
   currentGrammar"
   [currentGrammar grammarID]
 
-  (def binType (str/split (Integer/toString (int (read-string (get grammarID 0))) 2) #""))
+  (let [binType (str/split (Integer/toString (int (read-string (get grammarID 0))) 2) #"")]
+    (if (< (count binType) 13)
+      (do (let [tempVec (vec (repeat (- 13 (count binType)) 0))
+                paddedBT (concat tempVec binType)]
 
-  (if (< (count binType) 13)
-    (do (def tempVec (vec (repeat (- 13 (count binType)) 0)))
-      (def paddedBT (concat tempVec binType))
-      (= @currentGrammar paddedBT))
-    (= @currentGrammar binType)))
+          (= @currentGrammar paddedBT)))
+      (= @currentGrammar binType))))
 
 
 (comment 
