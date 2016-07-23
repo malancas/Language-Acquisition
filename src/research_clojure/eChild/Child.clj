@@ -3,9 +3,9 @@
 (require '[clojure.set :refer [union]])
 
 (defn inSentence?
-  "Returns true if e is an element of sentence"
-  [sentence e]
-  (= e (some #{e} sentence)))
+  "Returns true if el is an element of sentence"
+  [sentence el]
+  (= el (some #{el} sentence)))
 
 
 (defn isDeclarative
@@ -55,16 +55,19 @@
 
 
 (defn outOblique
+  "Out of obliqueness order"
   [sentence]
   (let [i (.indexOf sentence "01")
         j (.indexOf sentence "02")
         k (.indexOf sentence "P")
         l (.indexOf sentence "03")]
 
-      (if (and (not= i -1) (not= j -1) (not= k -1) (< i j k) (or (and (< i j k) (= l (+ k 1))) (and (< l j i) (= k (+ l 1)))))
-        false
-        (if (and (not= i -1) (not= j -1) (not= k -1) (not= l -1))
-          true))))
+      (cond
+        (and (not= i -1) (not= j -1) (not= k -1) (and (< i j k) (= l (+ k 1)))) false        
+        (and (not= i -1) (not= j -1) (not= k -1) (and (< l j i) (= k (+ l 1)))) false
+        (and (not= i -1) (not= j -1) (not= k -1) (not= l -1)) true
+        ;Should never reach this point
+        :else true)))
 
 
 (defn isQuestion
@@ -237,14 +240,14 @@
   (let [[g0 g1 g2] (take 3 currentGrammar)]
 
     (->> currentGrammar
-        (iToC_aux1 g0 g1 g2 sentence ,,,)
-        (iToC_aux2 g0 g1 g2 sentence ,,,)
-        (iToC_aux3 g0 g1 g2 sentence ,,,)
-        (iToC_aux4 g0 g1 g2 sentence ,,,)
-        (iToC_aux5 g0 g1 g2 sentence ,,,)
-        (iToC_aux6 g0 g1 g2 sentence ,,,)
-        (iToC_aux7 g0 g1 g2 sentence ,,,)
-        (iToC_aux8 g0 g1 g2 sentence ,,,))))
+        (iToC_aux1 g0 g1 g2 sentence)
+        (iToC_aux2 g0 g1 g2 sentence)
+        (iToC_aux3 g0 g1 g2 sentence)
+        (iToC_aux4 g0 g1 g2 sentence)
+        (iToC_aux5 g0 g1 g2 sentence)
+        (iToC_aux6 g0 g1 g2 sentence)
+        (iToC_aux7 g0 g1 g2 sentence)
+        (iToC_aux8 g0 g1 g2 sentence))))
 
 
 (defn checkForNV01or01VN
@@ -284,8 +287,8 @@
   (let [[senType sentence] (subvec infoList 1)]
 
     (->> initGrammar
-         (affixHop_aux1 senType sentence ,,,)
-         (affixHop_aux2 senType sentence ,,,))))
+         (affixHop_aux1 senType sentence)
+         (affixHop_aux2 senType sentence))))
 
   
 (defn questionInver
@@ -486,4 +489,3 @@
   containing the sentence"
   [sentenceInfo]
   (assoc sentenceInfo 2 (str/split (get sentenceInfo 2) #"\s")))
-

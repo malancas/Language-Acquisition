@@ -5,17 +5,10 @@
 (require '[clojure.tools.cli :refer [parse-opts]])
 
 
-;Used to read in the sentence file
-;Creates a vector of vectors
 (defn readFile
+  "Used to read in the sentence file. Creates a vector of vectors"
   [file]
-   (with-open [rdr (clojure.java.io/reader file)] (vec (csv/read-csv rdr :separator \tab))))
-
-;Returns whether the sentences grammar ID
-;matches gID
-(defn isSentenceNeeded
-  [x gID]
-  (= gID (get x 0)))
+  (with-open [rdr (clojure.java.io/reader file)] (vec (csv/read-csv rdr :separator \tab))))
 
 
 (defn chooseSentences
@@ -30,8 +23,11 @@
       (let [[sentence & remaining] remainingSentences]
         (recur remaining
                (into chosenSentences
-                     (if (isSentenceNeeded sentence gID)
-                       (set [sentence]))))))))
+                    ;If the grammar ID in sentence is
+                    ;equal to gID, then sentence is added
+                    ;to chosenSentences
+                    (if (= (get sentence 0) gID) 
+                      (set [sentence]))))))))
 
 
 (defn -main
@@ -46,7 +42,7 @@
           (System/exit 0))
       (if (not (and (>= (get arguments 0) 0) (>= (get arguments 1) 0) (>= (get arguments 2) 0)))
         (println "All arguments must be integers equal or greater than zero")
-        (do   (println "Load file from memory")
+        (do (println "Load file from memory")
 
             (let [allSentences (readFile "EngFrJapGerm.txt")]
 

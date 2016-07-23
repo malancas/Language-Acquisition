@@ -35,6 +35,8 @@
 
 
 (defn runSimulation
+  "max_eChildren number of eChildren will process 
+  max_sentences number of sentences."
   [sentences max_eChildren max_sentences]
   (io/delete-file "out.csv" :silently true)
 
