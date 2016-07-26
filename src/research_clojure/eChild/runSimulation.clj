@@ -21,11 +21,11 @@
   value in grammar has changed after being
   processed by setParameters"
   [timeCourseVector currGrammar sentenceCount]
-  (let [it (atom 0)]
-    (while (< it 13)
-      (if (not= (get (get @timeCourseVector it) 1) (get currGrammar i))
-        (reset! timeCourseVector [(get @timeCourseVector 0) (assoc (get @timeCourseVector it) 1 (get currGrammar it)) (assoc (get @timeCourseVector it) 2 sentenceCount)]))
-      (swap! it inc))))
+  (let [i (atom 0)]
+    (while (< @i 13)
+      (if (not= (get (get @timeCourseVector i) 1) (get currGrammar i))
+        (reset! timeCourseVector [(get @timeCourseVector 0) (assoc (get @timeCourseVector i) 1 (get currGrammar i)) (assoc (get @timeCourseVector i) 2 sentenceCount)]))
+      (swap! i inc))))
 
 
 (defn doesChildLearnGrammar?
@@ -42,7 +42,7 @@
         (while (and (not @grammarLearned) (< @sentenceCount max_num))
           (let [infoList1 (consumeSentence (rand-nth sentences))]
             (reset! grammar (setParameters infoList1 grammar))
-            (reset! timeCourseVector (updateTimeCourseVector timeCourseVector))
+            (reset! timeCourseVector (updateTimeCourseVector timeCourseVector @grammar @sentenceCount))
             (reset! grammarLearned (isGrammarLearned? grammar infoList1)))
           (swap! sentenceCount inc))
 
