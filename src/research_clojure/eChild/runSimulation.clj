@@ -14,6 +14,20 @@
             (csv/write-csv out-file [[(get lines 0) (get lines 1)]])))
 
 
+(defn updateTimeCourseVector
+  "Updates the sentence number of any of
+  the 13 parameters represented in 
+  timeCourseVector if their coresponding
+  value in grammar has changed after being
+  processed by setParameters"
+  [timeCourseVector currGrammar sentenceCount]
+  (let [it (atom 0)]
+    (while (< it 13)
+      (if (not= (get (get @timeCourseVector it) 1) (get currGrammar i))
+        (reset! timeCourseVector [(get @timeCourseVector 0) (assoc (get @timeCourseVector it) 1 (get currGrammar it)) (assoc (get @timeCourseVector it) 2 sentenceCount)]))
+      (swap! it inc))))
+
+
 (defn doesChildLearnGrammar?
   "Runs sentence consuming functions until the 
   correct grammar is learned or the maximum number
@@ -22,11 +36,13 @@
 
   (let [grammarLearned (atom false)
         sentenceCount (atom 0)
-        grammar (atom [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1])]
+        grammar (atom [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1])
+        timeCourseVector (atom [[0 1 2 3 4 5 6 7 8 9 10 11 12] [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1] [-1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1]])]
 
         (while (and (not @grammarLearned) (< @sentenceCount max_num))
           (let [infoList1 (consumeSentence (rand-nth sentences))]
             (reset! grammar (setParameters infoList1 grammar))
+            (reset! timeCourseVector (updateTimeCourseVector timeCourseVector))
             (reset! grammarLearned (isGrammarLearned? grammar infoList1)))
           (swap! sentenceCount inc))
 

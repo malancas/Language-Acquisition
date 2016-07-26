@@ -2,6 +2,7 @@
 (require ['clojure.string :as 'str])
 (require '[clojure.set :refer [union]])
 
+
 (defn inSentence?
   "Returns true if el is an element of sentence"
   [sentence el]
@@ -442,21 +443,6 @@
 
           (= @currentGrammar paddedBT)))
       (= @currentGrammar binType))))
-
-
-(comment 
-  (defn setParameters2
-    [infoList initGrammar funcList]
-    (def currentGrammar (atom initGrammar))
-    
-    (let [remainingFuncs funcList]
-
-      (loop [remainingFuncs funcList]
-        (if (empty? remainingFuncs)
-          [currentGrammar, (isGrammarLearned? currentGrammar infoList)]
-          (let [[func & remaining] remainingFuncs]
-            (recur (reset! currentGrammar (func infoList currentGrammar)))))))))
-
 
 
 (defn setParameters
