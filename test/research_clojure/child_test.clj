@@ -1,4 +1,4 @@
-ns research-clojure.child-test
+(ns research-clojure.child-test
   (:require [clojure.test :refer :all]
             [research-clojure.eChild.Child :refer :all]))
 
