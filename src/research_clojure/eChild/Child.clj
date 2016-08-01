@@ -55,22 +55,6 @@
     (or (= i 0) (= j 0) (= k 0) (= l 0) (= m 0))))
 
 
-(defn outOblique
-  "Out of obliqueness order"
-  [sentence]
-  (let [i (.indexOf sentence "01")
-        j (.indexOf sentence "02")
-        k (.indexOf sentence "P")
-        l (.indexOf sentence "03")]
-
-      (cond
-        (and (not= i -1) (not= j -1) (not= k -1) (and (< i j k) (= l (+ k 1)))) false        
-        (and (not= i -1) (not= j -1) (not= k -1) (and (< l j i) (= k (+ l 1)))) false
-        (and (not= i -1) (not= j -1) (not= k -1) (not= l -1)) true
-        ;Should never reach this point
-        :else true)))
-
-
 (defn isQuestion
   [x]
   (= x "Q"))
@@ -151,16 +135,6 @@
             (if (containsTopicalizable sentence)
               (assoc grammar 3 1)
               grammar))))
-    grammar))
-
-
-(defn setNullSubj
-  "5th parameter,
-  Only works for full, not 
-  necessarily with CHILDES distribution"
-  [infoList grammar]
-  (if (and (isDeclarative (get infoList 1)) (not (inSentence? (get infoList 2) "S")) (outOblique (get infoList 2)))
-    (assoc grammar 4 1)
     grammar))
 
 
@@ -365,6 +339,32 @@
   [grammar infoList]
   (if (and (= (get grammar 3) 1) (= (get grammar 5) 1))
     (setObligTopic infoList grammar)
+    grammar))
+
+
+(defn outOblique
+  "Out of obliqueness order"
+  [sentence]
+  (let [i (.indexOf sentence "01")
+        j (.indexOf sentence "02")
+        k (.indexOf sentence "P")
+        l (.indexOf sentence "03")]
+
+      (cond
+        (and (not= i -1) (not= j -1) (not= k -1) (and (< i j k) (= l (+ k 1)))) false        
+        (and (not= i -1) (not= j -1) (not= k -1) (and (< l j i) (= k (+ l 1)))) false
+        (and (not= i -1) (not= j -1) (not= k -1) (not= l -1)) true
+        ;Should never reach this point
+        :else true)))
+
+
+(defn setNullSubj
+  "5th parameter,
+  Only works for full, not 
+  necessarily with CHILDES distribution"
+  [infoList grammar]
+  (if (and (isDeclarative (get infoList 1)) (not (inSentence? (get infoList 2) "S")) (outOblique (get infoList 2)))
+    (assoc grammar 4 1)
     grammar))
 
 

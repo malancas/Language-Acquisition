@@ -123,11 +123,10 @@
          (assert (= currGrammar [0,0,0,1,1,1,1,0,0,0,0,0,0])))
 
     ;The grammar won't change since 01 isn't in the sentence
-    (let [currGrammar (parameter5 [0,0,0,1,0,1,1,0,0,0,0,0,0] ["611", "DEC", ["03", "Adv", "02", "Never", "Verb", "P"]])]
+    (let [currGrammar (parameter5 [0,0,0,1,0,1,1,0,0,0,0,0,0] ["611", "DEC", ["03", "P", "Adv", "02", "Never", "Verb", "01"]])]
          (assert (= 13 (count currGrammar)))
          (assert (= nil (some #(< 1 %) currGrammar)))
-         ;(assert (= currGrammar [0,0,0,1,0,1,1,0,0,0,0,0,0]))
-         )))
+         (assert (= currGrammar [0,0,0,1,0,1,1,0,0,0,0,0,0])))))
 
 
 (deftest parameter6-tests
@@ -283,11 +282,10 @@
 
     ;Grammar will change since 01's index is greater than 0
     ;and Q and Aux are present
-    (let [currGrammar (affixHop_aux2 "Q" ["Aux", "+WA", "P", "01", "Verb", "Never"] [0,0,0,1,0,0,1,0,0,1,0,0,0])]
+    (let [currGrammar (affixHop_aux2 "Q" ["+WA", "P", "01", "Verb", "Never"] [0,0,0,1,0,0,1,0,0,1,0,0,0])]
       (assert (= 13 (count currGrammar)))
       (assert (= nil (some #(< 1 %) currGrammar)))
-      ;(assert (= currGrammar [0,0,0,1,0,0,1,0,0,1,0,1,0]))
-      )))
+      (assert (= currGrammar [0,0,0,1,0,0,1,0,0,1,0,1,0])))))
 
 
 (deftest parameter13-tests
