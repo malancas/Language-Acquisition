@@ -81,6 +81,47 @@
   (and (or (isDeclarative senType) (isQuestion senType)) (not (inSentence? sentence "Aux"))))
 
 
+(defn checkForNV01or01VN
+  "Checks if either 'Never Verb 01' or 
+  '01 Verb Never' appear in sentence"
+  [sentence checkForNV01]
+
+  (let [n (.indexOf sentence "Never")
+        v (.indexOf sentence "Verb")  
+        o (.indexOf sentence "01")]
+
+        (if (and (not= n -1) (not= v -1) (not= o -1))
+          (if checkForNV01
+            (< n v o)
+            (< o v n))
+          false)))
+
+
+(defn affixHop_aux1
+  [senType sentence grammar]
+  (if (and (Verb_tensed sentence senType) (checkForNV01or01VN sentence true))
+    (assoc grammar 11 1)
+    grammar))
+
+
+(defn affixHop_aux2
+  [senType sentence grammar]
+  (if (and (Verb_tensed sentence senType) (> (.indexOf sentence "01") 0) (checkForNV01or01VN sentence false))
+    (assoc grammar 11 1)
+    grammar))
+
+                                                  
+(defn affixHop
+  "12th parameter"
+  [infoList initGrammar]
+
+  (let [[senType sentence] (subvec infoList 1)]
+
+    (->> initGrammar
+         (affixHop_aux1 senType sentence)
+         (affixHop_aux2 senType sentence))))
+
+
 (defn S_Aux
   [sen]
   (if (isDeclarative (get sen 1))
@@ -249,47 +290,6 @@
         (iToC_aux6 g0 g1 g2 sentence)
         (iToC_aux7 g0 g1 g2 sentence)
         (iToC_aux8 g0 g1 g2 sentence))))
-
-
-(defn checkForNV01or01VN
-  "Checks if either 'Never Verb 01' or 
-  '01 Verb Never' appear in sentence"
-  [sentence checkForNV01]
-
-  (let [n (.indexOf sentence "Never")
-        v (.indexOf sentence "Verb")  
-        o (.indexOf sentence "01")]
-
-        (if (and (not= n -1) (not= v -1) (not= o -1))
-          (if checkForNV01
-            (< n v o)
-            (< o v n))
-          false)))
-
-
-(defn affixHop_aux1
-  [senType sentence grammar]
-  (if (and (Verb_tensed sentence senType) (checkForNV01or01VN sentence true))
-    (assoc grammar 11 1)
-    grammar))
-
-
-(defn affixHop_aux2
-  [senType sentence grammar]
-  (if (and (Verb_tensed sentence senType) (> (.indexOf sentence "01") 0) (checkForNV01or01VN sentence false))
-    (assoc grammar 11 1)
-    grammar))
-
-                                                  
-(defn affixHop
-  "12th parameter"
-  [infoList initGrammar]
-
-  (let [[senType sentence] (subvec infoList 1)]
-
-    (->> initGrammar
-         (affixHop_aux1 senType sentence)
-         (affixHop_aux2 senType sentence))))
 
   
 (defn questionInver
