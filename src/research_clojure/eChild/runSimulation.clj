@@ -11,7 +11,7 @@
   "Writes the results of doesChildLearnGrammar? to output file"
   [lines]
   (with-open [out-file (io/writer "out.csv" :append true)]
-            (csv/write-csv out-file [[(get lines 0) (get lines 1)]])))
+            (csv/write-csv out-file [[(get lines 0) (get lines 1) (get lines 2)]])))
 
 
 (defn updateTimeCourseVector
@@ -20,12 +20,15 @@
   timeCourseVector if their coresponding
   value in grammar has changed after being
   processed by setParameters"
-  [timeCourseVector currGrammar sentenceCount]
-  (let [i (atom 0)]
+  [timeCourseVector currGrammar oldGrammar sentenceCount]
+  (let [i (atom 0)
+        countArr (atom [])]
     (while (< @i 13)
-      (if (not= (get (get @timeCourseVector i) 1) (get currGrammar i))
-        (reset! timeCourseVector [(get @timeCourseVector 0) (assoc (get @timeCourseVector i) 1 (get currGrammar i)) (assoc (get @timeCourseVector i) 2 sentenceCount)]))
-      (swap! i inc))))
+      (if (not= (get oldGrammar @i) (get currGrammar @i))
+        (reset! countArr (conj @countArr sentenceCount))
+        (reset! countArr (conj @countArr (get (get timeCourseVector 1) @i))))
+      (swap! i inc))
+    (assoc timeCourseVector 1 @countArr)))
 
 
 (defn doesChildLearnGrammar?
@@ -37,17 +40,19 @@
   (let [grammarLearned (atom false)
         sentenceCount (atom 0)
         grammar (atom [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1])
-        timeCourseVector (atom [[0 1 2 3 4 5 6 7 8 9 10 11 12] [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1] [-1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1]])]
+        timeCourseVector (atom [[1 2 3 4 5 6 7 8 9 10 11 12 13] [-1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1]])
+        oldGrammar (atom [-1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1])]
 
         (while (and (not @grammarLearned) (< @sentenceCount max_num))
           (let [infoList1 (consumeSentence (rand-nth sentences))]
             (reset! grammar (setParameters infoList1 grammar))
-            (reset! timeCourseVector (updateTimeCourseVector timeCourseVector @grammar @sentenceCount))
+            (reset! timeCourseVector (updateTimeCourseVector @timeCourseVector @grammar @oldGrammar @sentenceCount))
+            (reset! oldGrammar @grammar)
             (reset! grammarLearned (isGrammarLearned? grammar infoList1)))
           (swap! sentenceCount inc))
 
         (println "Final grammar: " @grammar)
-        (writeResults [@grammar @grammarLearned])))
+        (writeResults [@grammar @grammarLearned @timeCourseVector])))
 
 
 (defn runSimulation

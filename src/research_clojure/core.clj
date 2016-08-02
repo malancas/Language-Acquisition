@@ -2,7 +2,6 @@
 (require 'research-clojure.eChild.runSimulation)
 (refer 'research-clojure.eChild.runSimulation)
 (require '[clojure.data.csv :as csv])
-(require '[clojure.tools.cli :refer [parse-opts]])
 
 
 (defn readFile
