@@ -16,8 +16,8 @@
 
 (defn updateTimeCourseVector
   "Updates the sentence number of any of
-  the 13 parameters represented in 
-  timeCourseVector if their coresponding
+  the 13 parameters (represented by oldGrammar) 
+  recorded in timeCourseVector if their coresponding
   value in grammar has changed after being
   processed by setParameters"
   [timeCourseVector currGrammar oldGrammar sentenceCount]
