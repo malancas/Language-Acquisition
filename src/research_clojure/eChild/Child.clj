@@ -14,47 +14,6 @@
   (= x "DEC"))
 
 
-(defn Verb_Never
-  [sen]
-  (and (isDeclarative (get sen 1)) (= (.indexOf sen "Verb") (- (.indexOf sen "Never") 1)) ((= (.indexOf sen "Aux") -1))))
-    
-
-(defn hasKa
-  [sen]
-  (inSentence? sen "ka"))
-
-
-(defn Aux_Verb
-  [sen]
-  (and (isDeclarative (get sen 1)) (= (.indexOf sen "Aux") (- (.indexOf sen "Verb") 1)))) 
-
-
-(defn Verb_Aux
-  [sen]
-  (and (isDeclarative (get sen 1)) (= (.indexOf sen "Verb") (- (.indexOf sen "Aux") 1))))
-   
-
-(defn Never_Verb
-  [sen]
-  (and (isDeclarative (get sen 1)) (= (.indexOf sen "Never") (.indexOf sen "Verb")) ((= (.indexOf sen "Aux") -1))))
-
-
-(defn isImperative
-  [x]
-  (= x "IMP"))
-
-
-(defn containsTopicalizable
-  [sentence]
-  (let [i (.indexOf sentence "S")
-        j (.indexOf sentence "01")
-        k (.indexOf sentence "02")
-        l (.indexOf sentence "03")
-        m (.indexOf sentence "Adv")]
-    
-    (or (= i 0) (= j 0) (= k 0) (= l 0) (= m 0))))
-
-
 (defn isQuestion
   [x]
   (= x "Q"))
@@ -81,197 +40,12 @@
           false)))
 
 
-(defn affixHop_aux1
-  [senType sentence grammar]
-  (if (and (Verb_tensed sentence senType) (checkForNV01or01VN sentence true))
-    (assoc grammar 11 1)
-    grammar))
-
-
-(defn affixHop_aux2
-  [senType sentence grammar]
-  (if (and (Verb_tensed sentence senType) (> (.indexOf sentence "01") 0) (checkForNV01or01VN sentence false))
-    (assoc grammar 11 1)
-    grammar))
-
-                                                  
-(defn affixHop
-  "12th parameter"
-  [infoList initGrammar]
-
-  (let [[senType sentence] (subvec infoList 1)]
-
-    (->> initGrammar
-         (affixHop_aux1 senType sentence)
-         (affixHop_aux2 senType sentence))))
-
-
 (defn S_Aux
   [sen]
   (if (isDeclarative (get sen 1))
     (do (let [i (.indexOf sen "S")]
           (and (> i 0) (= (+ i 1) (.indexOf sen "Aux")))))
     false))
-
-
-(defn Aux_S
-  [sen]
-  (if (isDeclarative (get sen 1))
-    (do (let [i (.indexOf sen "Aux")]
-          (and (> i 0) (= (+ i 1) (.indexOf sen "S")))))
-    false))
-
-
-(defn setObligTopic
-  "4th parameter"
-  [infoList grammar]
-  (if (isDeclarative (get infoList 1))
-    (do (let [sentence (get infoList 2)]
-          (if (and (inSentence? sentence "02") (not (inSentence? sentence "01")))
-            (do (let [tempGrammar (assoc grammar 5 1)]
-                 (if (= (get tempGrammar 3) 1)
-                   (assoc tempGrammar 3 0)
-                   tempGrammar)))
-            (if (containsTopicalizable sentence)
-              (assoc grammar 3 1)
-              grammar))))
-    grammar))
-
-
-(defn setNullTopic
-  "6th parameter"
-  [sentence grammar]
-  (if (and (inSentence? sentence "02") (not (inSentence? sentence "01")))
-    (assoc grammar 5 1)
-    grammar))
-
-
-(defn setWHMovement
-  "7th parameter"
-  [sentence grammar]
-  (if (and (> (.indexOf sentence "+WH") 0) (not (inSentence? sentence "03[+WH]")))
-    (assoc grammar 6 0)
-    grammar))
-
-
-(defn setPrepStrand
-  "8th parameter"
-  [sentence grammar]
-  (if (and (inSentence? sentence "P") (inSentence? sentence "03"))
-    (do
-      (let [i (.indexOf sentence "P")   ;Get index of P
-            j (.indexOf sentence "03")] ;Get index of 03
-
-      ;If they exist, make sure they aren't adjacent
-      (if (not= (Math/abs (- i j)) 1)
-        (assoc grammar 7 1)
-        grammar)))
-    grammar))
-
-
-
-(defn setTopicMark
-  "9th parameter"
-  [sentence grammar]
-  (if (inSentence? sentence "WA")
-    (assoc grammar 8 1)
-    grammar))
-
-
-(defn vToI
-  "10th parameter"
-  [sentence grammar]
-  (if (and (inSentence? sentence "01") (inSentence? sentence "Verb"))
-    (do (let [i (.indexOf sentence "01")
-              j (.indexOf sentence "Verb")]
-
-          (if (and (> i 0) (not= (Math/abs (- i j)) 1))
-            (assoc grammar 9 1)
-            grammar)))
-    grammar))
-
-
-(defn iToC_aux1
-  "11th parameter auxiliary"
-  [g0 g1 g2 sentence grammar]
-  (if (and (= g0 0) (= g1 0) (= g2 0) (S_Aux sentence))
-    (assoc grammar 10 0)
-    grammar))
-
-
-(defn iToC_aux2
-  "11th parameter auxiliary"
-  [g0 g1 g2 sentence grammar]
-  (if (and (= g0 1) (= g1 1) (= g2 1) (Aux_S sentence))
-    (assoc grammar 10 0)
-    grammar))
-
-
-(defn iToC_aux3
-  [g0 g1 g2 sentence grammar]
-  (if (and (= g0 1) (= g1 0) (= g2 1) (Aux_Verb sentence))
-    (assoc grammar 10 0)
-    grammar))
-
-
-(defn iToC_aux4
-  [g0 g1 g2 sentence grammar]
-  (if (and (= g0 0) (= g1 1) (= g2 0) (Verb_Aux sentence))
-    (assoc grammar 10 0)
-    grammar))
-
-
-(defn iToC_aux5
-  [g0 g1 g2 sentence grammar]
-  (if (and (= g0 0) (= g1 0) (= g2 1) (S_Aux sentence))
-    (assoc grammar 10 0)
-    grammar))
-
-
-(defn iToC_aux6
-  [g0 g1 g2 sentence grammar]
-  (if (and (= g0 1) (= g1 1) (= g2 1) (Aux_S sentence))
-    (assoc grammar 10 0)
-    grammar))
-
-
-(defn iToC_aux7
-  [g0 g1 g2 sentence grammar]
-  (if (and (= g0 1) (= g1 0) (= g2 0) (or (Never_Verb sentence) (hasKa sentence)))
-    (assoc grammar 10 0)
-    grammar))
-
-
-(defn iToC_aux8
-  [g0 g1 g2 sentence grammar]
-  (if (and (= g0 0) (= g1 1) (= g2 1) (or (Verb_Never sentence) (hasKa sentence)))
-    (assoc grammar 10 0)
-    grammar))
-
-
-(defn iToC
-  "11th parameter"
-  [sentence currentGrammar]
-  
-  (let [[g0 g1 g2] (take 3 currentGrammar)]
-
-    (->> currentGrammar
-        (iToC_aux1 g0 g1 g2 sentence)
-        (iToC_aux2 g0 g1 g2 sentence)
-        (iToC_aux3 g0 g1 g2 sentence)
-        (iToC_aux4 g0 g1 g2 sentence)
-        (iToC_aux5 g0 g1 g2 sentence)
-        (iToC_aux6 g0 g1 g2 sentence)
-        (iToC_aux7 g0 g1 g2 sentence)
-        (iToC_aux8 g0 g1 g2 sentence))))
-
-  
-(defn questionInver
-  "13th parameter"
-  [sentence grammar]
-  (if (inSentence? sentence "ka")
-    (assoc grammar 12 0)
-    grammar))
 
 
 (defn setSubjPos
@@ -282,6 +56,13 @@
          (if (and (> first 0) (< first (.indexOf sen "S")))
            (assoc grammar 0 1)
            grammar)))
+    grammar))
+
+
+(defn parameter1
+  [grammar infoList]
+  (if (= (get grammar 0) 0)
+    (setSubjPos grammar (get infoList 2))
     grammar))
 
 
@@ -296,6 +77,11 @@
           (assoc initGrammar 1 1)
           initGrammar)))
     initGrammar))
+
+
+(defn isImperative
+  [x]
+  (= x "IMP"))
 
 
 (defn setHead_aux2
@@ -314,13 +100,6 @@
     (setHead_aux2 infoList tempGrammar)))
 
 
-(defn parameter1
-  [grammar infoList]
-  (if (= (get grammar 0) 0)
-    (setSubjPos grammar (get infoList 2))
-    grammar))
-
-
 (defn parameter2
   [grammar infoList]
   (if (= (get grammar 1) 0)
@@ -332,6 +111,33 @@
   [grammar infoList]
   (if (= (get grammar 2) 0)
     (setHead infoList grammar)
+    grammar))
+
+
+(defn containsTopicalizable
+  [sentence]
+  (let [i (.indexOf sentence "S")
+        j (.indexOf sentence "01")
+        k (.indexOf sentence "02")
+        l (.indexOf sentence "03")
+        m (.indexOf sentence "Adv")]
+    
+    (or (= i 0) (= j 0) (= k 0) (= l 0) (= m 0))))
+
+
+(defn setObligTopic
+  "4th parameter"
+  [infoList grammar]
+  (if (isDeclarative (get infoList 1))
+    (do (let [sentence (get infoList 2)]
+          (if (and (inSentence? sentence "02") (not (inSentence? sentence "01")))
+            (do (let [tempGrammar (assoc grammar 5 1)]
+                 (if (= (get tempGrammar 3) 1)
+                   (assoc tempGrammar 3 0)
+                   tempGrammar)))
+            (if (containsTopicalizable sentence)
+              (assoc grammar 3 1)
+              grammar))))
     grammar))
 
 
@@ -375,10 +181,26 @@
     grammar))
 
 
+(defn setNullTopic
+  "6th parameter"
+  [sentence grammar]
+  (if (and (inSentence? sentence "02") (not (inSentence? sentence "01")))
+    (assoc grammar 5 1)
+    grammar))
+
+
 (defn parameter6
   [grammar infoList]
   (if (= (get grammar 5) 0)
     (setNullTopic (get infoList 2) grammar)
+    grammar))
+
+
+(defn setWHMovement
+  "7th parameter"
+  [sentence grammar]
+  (if (and (> (.indexOf sentence "+WH") 0) (not (inSentence? sentence "03[+WH]")))
+    (assoc grammar 6 0)
     grammar))
 
 
@@ -389,11 +211,34 @@
     initGrammar))
 
 
+(defn setPrepStrand
+  "8th parameter"
+  [sentence grammar]
+  (if (and (inSentence? sentence "P") (inSentence? sentence "03"))
+    (do
+      (let [i (.indexOf sentence "P")   ;Get index of P
+            j (.indexOf sentence "03")] ;Get index of 03
+
+      ;If they exist, make sure they aren't adjacent
+      (if (not= (Math/abs (- i j)) 1)
+        (assoc grammar 7 1)
+        grammar)))
+    grammar))
+
+
 (defn parameter8
   [initGrammar infoList]
   (if (= (get initGrammar 7) 0)
     (setPrepStrand (get infoList 2) initGrammar)
     initGrammar))
+
+
+(defn setTopicMark
+  "9th parameter"
+  [sentence grammar]
+  (if (inSentence? sentence "WA")
+    (assoc grammar 8 1)
+    grammar))
 
 
 (defn parameter9
@@ -403,11 +248,132 @@
     initGrammar))
 
 
+(defn vToI
+  "10th parameter"
+  [sentence grammar]
+  (if (and (inSentence? sentence "01") (inSentence? sentence "Verb"))
+    (do (let [i (.indexOf sentence "01")
+              j (.indexOf sentence "Verb")]
+
+          (if (and (> i 0) (not= (Math/abs (- i j)) 1))
+            (assoc grammar 9 1)
+            grammar)))
+    grammar))
+
+
 (defn parameter10
   [initGrammar infoList]
   (if (= (get initGrammar 9) 0)
     (vToI (get infoList 2) initGrammar)
     initGrammar))
+
+
+(defn iToC_aux1
+  "11th parameter auxiliary"
+  [g0 g1 g2 sentence grammar]
+  (if (and (= g0 0) (= g1 0) (= g2 0) (S_Aux sentence))
+    (assoc grammar 10 0)
+    grammar))
+
+
+(defn Aux_S
+  [sen]
+  (if (isDeclarative (get sen 1))
+    (do (let [i (.indexOf sen "Aux")]
+          (and (> i 0) (= (+ i 1) (.indexOf sen "S")))))
+    false))
+
+
+(defn iToC_aux2
+  "11th parameter auxiliary"
+  [g0 g1 g2 sentence grammar]
+  (if (and (= g0 1) (= g1 1) (= g2 1) (Aux_S sentence))
+    (assoc grammar 10 0)
+    grammar))
+
+
+(defn Aux_Verb
+  [sen]
+  (and (isDeclarative (get sen 1)) (= (.indexOf sen "Aux") (- (.indexOf sen "Verb") 1)))) 
+
+
+(defn iToC_aux3
+  [g0 g1 g2 sentence grammar]
+  (if (and (= g0 1) (= g1 0) (= g2 1) (Aux_Verb sentence))
+    (assoc grammar 10 0)
+    grammar))
+
+
+(defn Verb_Aux
+  [sen]
+  (and (isDeclarative (get sen 1)) (= (.indexOf sen "Verb") (- (.indexOf sen "Aux") 1))))
+
+
+(defn iToC_aux4
+  [g0 g1 g2 sentence grammar]
+  (if (and (= g0 0) (= g1 1) (= g2 0) (Verb_Aux sentence))
+    (assoc grammar 10 0)
+    grammar))
+
+
+(defn iToC_aux5
+  [g0 g1 g2 sentence grammar]
+  (if (and (= g0 0) (= g1 0) (= g2 1) (S_Aux sentence))
+    (assoc grammar 10 0)
+    grammar))
+
+
+(defn iToC_aux6
+  [g0 g1 g2 sentence grammar]
+  (if (and (= g0 1) (= g1 1) (= g2 1) (Aux_S sentence))
+    (assoc grammar 10 0)
+    grammar))
+
+
+(defn hasKa
+  [sen]
+  (inSentence? sen "ka"))
+
+
+(defn Never_Verb
+  [sen]
+  (and (isDeclarative (get sen 1)) (= (.indexOf sen "Never") (.indexOf sen "Verb")) ((= (.indexOf sen "Aux") -1))))
+
+
+(defn iToC_aux7
+  [g0 g1 g2 sentence grammar]
+  (if (and (= g0 1) (= g1 0) (= g2 0) (or (Never_Verb sentence) (hasKa sentence)))
+    (assoc grammar 10 0)
+    grammar))
+
+
+(defn Verb_Never
+  [sen]
+  (and (isDeclarative (get sen 1)) (= (.indexOf sen "Verb") (- (.indexOf sen "Never") 1)) ((= (.indexOf sen "Aux") -1))))
+
+
+(defn iToC_aux8
+  [g0 g1 g2 sentence grammar]
+  (if (and (= g0 0) (= g1 1) (= g2 1) (or (Verb_Never sentence) (hasKa sentence)))
+    (assoc grammar 10 0)
+    grammar))
+
+
+(defn iToC
+  "11th parameter"
+  [sentence currentGrammar]
+  
+  (let [[g0 g1 g2] (take 3 currentGrammar)]
+
+    (->> currentGrammar
+        (iToC_aux1 g0 g1 g2 sentence)
+        (iToC_aux2 g0 g1 g2 sentence)
+        (iToC_aux3 g0 g1 g2 sentence)
+        (iToC_aux4 g0 g1 g2 sentence)
+        (iToC_aux5 g0 g1 g2 sentence)
+        (iToC_aux6 g0 g1 g2 sentence)
+        (iToC_aux7 g0 g1 g2 sentence)
+        (iToC_aux8 g0 g1 g2 sentence))))
 
 
 (defn parameter11
@@ -417,11 +383,44 @@
     initGrammar))
 
 
+(defn affixHop_aux1
+  [senType sentence grammar]
+  (if (and (Verb_tensed sentence senType) (checkForNV01or01VN sentence true))
+    (assoc grammar 11 1)
+    grammar))
+
+
+(defn affixHop_aux2
+  [senType sentence grammar]
+  (if (and (Verb_tensed sentence senType) (> (.indexOf sentence "01") 0) (checkForNV01or01VN sentence false))
+    (assoc grammar 11 1)
+    grammar))
+
+                                                  
+(defn affixHop
+  "12th parameter"
+  [infoList initGrammar]
+
+  (let [[senType sentence] (subvec infoList 1)]
+
+    (->> initGrammar
+         (affixHop_aux1 senType sentence)
+         (affixHop_aux2 senType sentence))))
+
+
 (defn parameter12
   [initGrammar infoList]
   (if (= (get initGrammar 11) 0)
     (affixHop infoList initGrammar)
     initGrammar))
+
+
+(defn questionInver
+  "13th parameter"
+  [sentence grammar]
+  (if (inSentence? sentence "ka")
+    (assoc grammar 12 0)
+    grammar))
 
 
 (defn parameter13
