@@ -10,8 +10,11 @@
 (defn writeResults
   "Writes the results of doesChildLearnGrammar? to output file"
   [lines]
-  (with-open [out-file (io/writer "out.csv" :append true)]
-            (csv/write-csv out-file [[(get lines 0) (get lines 1) (get lines 2)]])))
+  (let [parameterList (get lines 2)
+        convergedList (get lines 3)]
+
+      (with-open [out-file (io/writer "out.csv" :append true)]
+            (csv/write-csv out-file [[(get lines 0) (get lines 1) (get parameterList 0) (get convergedList 0) (get parameterList 1) (get convergedList 1) (get parameterList 2) (get convergedList 2) (get parameterList 3) (get convergedList 3) (get parameterList 4) (get convergedList 4) (get parameterList 5) (get convergedList 5) (get parameterList 6) (get convergedList 6) (get parameterList 7) (get convergedList 7) (get parameterList 8) (get convergedList 8) (get parameterList 9) (get convergedList 9) (get parameterList 10) (get convergedList 10) (get parameterList 11) (get convergedList 11) (get parameterList 12) (get convergedList 12)]]))))
 
 
 (defn updateTimeCourseVector
@@ -52,7 +55,7 @@
           (swap! sentenceCount inc))
 
         (println "Final grammar: " @grammar)
-        (writeResults [@grammar @grammarLearned @timeCourseVector])))
+        (writeResults [@grammar @grammarLearned (get @timeCourseVector 0) (get @timeCourseVector 1)])))
 
 
 (defn runSimulation
@@ -63,7 +66,7 @@
 
   (let [counter (atom 0)]
     (while (< @counter max_eChildren)
-      (println "eChild #" @counter)
+      (println "eChild #" (+ @counter 1))
       (doesChildLearnGrammar? sentences max_sentences)
       (swap! counter inc))))
 
