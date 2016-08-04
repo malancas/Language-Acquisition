@@ -4,17 +4,27 @@
 (require '[clojure.string :as str]
          '[clojure.data.csv :as csv]
          '[clojure.java.io :as io]
-         '[clojure.set :refer [union]])
+         '[clojure.set :refer [union]]
+         '[clojure.core.async :refer [>! <! chan alts!! thread go]])
 
 
 (defn writeResults
-  "Writes the results of doesChildLearnGrammar? to output file"
+  "Writes the results of doesChildLearnGrammar to output file"
   [lines]
   (let [parameterList (get lines 2)
         convergedList (get lines 3)]
 
       (with-open [out-file (io/writer "out.csv" :append true)]
-            (csv/write-csv out-file [[(get lines 0) (get lines 1) (get parameterList 0) (get convergedList 0) (get parameterList 1) (get convergedList 1) (get parameterList 2) (get convergedList 2) (get parameterList 3) (get convergedList 3) (get parameterList 4) (get convergedList 4) (get parameterList 5) (get convergedList 5) (get parameterList 6) (get convergedList 6) (get parameterList 7) (get convergedList 7) (get parameterList 8) (get convergedList 8) (get parameterList 9) (get convergedList 9) (get parameterList 10) (get convergedList 10) (get parameterList 11) (get convergedList 11) (get parameterList 12) (get convergedList 12)]]))))
+        (csv/write-csv out-file [[(get lines 0) (get lines 1) 
+          (get parameterList 0) (get convergedList 0) (get parameterList 1) 
+          (get convergedList 1) (get parameterList 2) (get convergedList 2) 
+          (get parameterList 3) (get convergedList 3) (get parameterList 4) 
+          (get convergedList 4) (get parameterList 5) (get convergedList 5) 
+          (get parameterList 6) (get convergedList 6) (get parameterList 7) 
+          (get convergedList 7) (get parameterList 8) (get convergedList 8) 
+          (get parameterList 9) (get convergedList 9) (get parameterList 10) 
+          (get convergedList 10) (get parameterList 11) (get convergedList 11) 
+          (get parameterList 12) (get convergedList 12)]]))))
 
 
 (defn updateTimeCourseVector
@@ -33,8 +43,9 @@
       (swap! i inc))
     (assoc timeCourseVector 1 @countArr)))
 
-
-(defn doesChildLearnGrammar?
+;The final grammar must be return from 
+;this function and piped into writeResults
+(defn doesChildLearnGrammar
   "Runs sentence consuming functions until the 
   correct grammar is learned or the maximum number
   of sentences are processed. Needs infoList, grammar, expected grammar"
@@ -54,19 +65,17 @@
             (reset! grammarLearned (isGrammarLearned? grammar infoList1)))
           (swap! sentenceCount inc))
 
-        (println "Final grammar: " @grammar)
-        (writeResults [@grammar @grammarLearned (get @timeCourseVector 0) (get @timeCourseVector 1)])))
+        ;(println "Final grammar: " @grammar)
+        [@grammar @grammarLearned (first @timeCourseVector) (last @timeCourseVector)]))
 
 
 (defn runSimulation
-  "max_eChildren number of eChildren will process 
-  max_sentences number of sentences."
-  [sentences max_eChildren max_sentences]
+  "numChild number of the funciton doesChildLearnGrammar
+  will run, each on their own thread. The answers will
+  then be fed into writeResults"
+  [sentences totalEChildren max_sentences]
   (io/delete-file "out.csv" :silently true)
 
-  (let [counter (atom 0)]
-    (while (< @counter max_eChildren)
-      (println "eChild #" (+ @counter 1))
-      (doesChildLearnGrammar? sentences max_sentences)
-      (swap! counter inc))))
-
+  (let [c (chan)]
+    (go (while true (writeResults (<! c))))
+    (dotimes [m totalEChildren] (go (>! c (doesChildLearnGrammar sentences max_sentences))))))

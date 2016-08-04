@@ -51,13 +51,3 @@
                 (if (empty? selectedSentences)
                   (println "There are no sentences with the selected grammarID")
                   (runSimulation selectedSentences (get arguments 0) (get arguments 1))))))))))
-
-
-
-
-
- 
-
-
-
-
