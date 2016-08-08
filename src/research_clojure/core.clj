@@ -50,4 +50,4 @@
               (let [selectedSentences (chooseSentences allSentences (str (get arguments 2)))]
                 (if (empty? selectedSentences)
                   (println "There are no sentences with the selected grammarID")
-                  (runSimulation selectedSentences (get arguments 0) (get arguments 1))))))))))
+                  (runSimulation_serial selectedSentences (get arguments 0) (get arguments 1))))))))))

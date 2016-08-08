@@ -5,7 +5,8 @@
          '[clojure.data.csv :as csv]
          '[clojure.java.io :as io]
          '[clojure.set :refer [union]]
-         '[clojure.core.async :refer [>! <! chan alts!! thread go]])
+         '[clojure.core.async :as a 
+                              :refer [>! <! chan alts!! thread go]])
 
 
 (defn writeResults
@@ -50,7 +51,7 @@
   correct grammar is learned or the maximum number
   of sentences are processed. Needs infoList, grammar, expected grammar"
   [sentences max_num]
-
+  
   (let [grammarLearned (atom false)
         sentenceCount (atom 0)
         grammar (atom [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1])
@@ -65,12 +66,12 @@
             (reset! grammarLearned (isGrammarLearned? grammar infoList1)))
           (swap! sentenceCount inc))
 
-        ;(println "Final grammar: " @grammar)
+        (println "Final grammar: " @grammar)
         [@grammar @grammarLearned (first @timeCourseVector) (last @timeCourseVector)]))
 
 
 (defn runSimulation
-  "numChild number of the funciton doesChildLearnGrammar
+  "totalEChildren number of the function doesChildLearnGrammar
   will run, each on their own thread. The answers will
   then be fed into writeResults"
   [sentences totalEChildren max_sentences]
@@ -79,3 +80,17 @@
   (let [c (chan)]
     (go (while true (writeResults (<! c))))
     (dotimes [m totalEChildren] (go (>! c (doesChildLearnGrammar sentences max_sentences))))))
+
+
+(defn runSimulation_serial
+  "max_eChildren number of eChildren will process 
+  max_sentences number of sentences. Doesn't use 
+  any concurrency"
+  [sentences totalEChildren max_sentences]
+  (io/delete-file "out.csv" :silently true)
+
+  (let [counter (atom 0)]
+    (while (< @counter totalEChildren)
+      (println "eChild #" (+ @counter 1))
+      (doesChildLearnGrammar sentences max_sentences)
+(swap! counter inc))))
