@@ -34,7 +34,7 @@
     (assoc timeCourseVector 1 @countArr)))
 
 
-(defn doesChildLearnGrammar?
+(defn doesChildLearnGrammar
   "Runs sentence consuming functions until the 
   correct grammar is learned or the maximum number
   of sentences are processed. Needs infoList, grammar, expected grammar"
@@ -67,6 +67,6 @@
   (let [counter (atom 0)]
     (while (< @counter max_eChildren)
       (println "eChild #" (+ @counter 1))
-      (doesChildLearnGrammar? sentences max_sentences)
+      (doesChildLearnGrammar sentences max_sentences)
       (swap! counter inc))))
 
