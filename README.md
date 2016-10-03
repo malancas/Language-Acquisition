@@ -1,5 +1,3 @@
-##About
--------
 ###This a port of the program used for research found in the [CUNY CoLAG Sims 2016-17 repository](https://github.com/malancas/CUNY-CoLAG-Sims-2016-17)
 
 That project is written in Python 2.7, however I decided to port it to Clojure for my own interest as a means of learning the language, getting acquainted with functional programming, and exploring concurrency methods that the project could benefit from.
