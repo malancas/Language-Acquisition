@@ -8,7 +8,7 @@
 
 
 (defn writeResults
-  "Writes the results of doesChildLearnGrammar? to output file"
+  "Writes the results of doesChildLearnGrammar to output file"
   [lines]
   (let [parameterList (get lines 2)
         convergedList (get lines 3)]
@@ -55,7 +55,7 @@
           (swap! sentenceCount inc))
 
         (println "Final grammar: " @grammar)
-        (writeResults [@grammar @grammarLearned (get @timeCourseVector 0) (get @timeCourseVector 1)])))
+        [@grammar @grammarLearned (get @timeCourseVector 0) (get @timeCourseVector 1)]))
 
 
 (defn runSimulation
@@ -67,6 +67,6 @@
   (let [counter (atom 0)]
     (while (< @counter max_eChildren)
       (println "eChild #" (+ @counter 1))
-      (doesChildLearnGrammar sentences max_sentences)
+      (writeResults (doesChildLearnGrammar sentences max_sentences))
       (swap! counter inc))))
 
