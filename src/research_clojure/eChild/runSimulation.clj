@@ -8,13 +8,10 @@
 
 
 (defn writeResults
-  "Writes the results of doesChildLearnGrammar to output file"
-  [lines]
-  (let [parameterList (get lines 2)
-        convergedList (get lines 3)]
-
-      (with-open [out-file (io/writer "out.csv" :append true)]
-            (csv/write-csv out-file [[(get lines 0) (get lines 1) (get parameterList 0) (get convergedList 0) (get parameterList 1) (get convergedList 1) (get parameterList 2) (get convergedList 2) (get parameterList 3) (get convergedList 3) (get parameterList 4) (get convergedList 4) (get parameterList 5) (get convergedList 5) (get parameterList 6) (get convergedList 6) (get parameterList 7) (get convergedList 7) (get parameterList 8) (get convergedList 8) (get parameterList 9) (get convergedList 9) (get parameterList 10) (get convergedList 10) (get parameterList 11) (get convergedList 11) (get parameterList 12) (get convergedList 12)]]))))
+  "Writes the results of each learner to an output file"
+  [results]
+  (println results)
+  (spit "out.csv" results))
 
 
 (defn updateTimeCourseVector
@@ -27,10 +24,10 @@
   (let [i (atom 0)
         countArr (atom [])]
     (while (< @i 13)
-      (if (not= (get oldGrammar @i) (get currGrammar @i))
-        (reset! countArr (conj @countArr sentenceCount))
-        (reset! countArr (conj @countArr (get (get timeCourseVector 1) @i))))
-      (swap! i inc))
+        (if (not= (get oldGrammar @i) (get currGrammar @i))
+          (reset! countArr (conj @countArr sentenceCount))
+          (reset! countArr (conj @countArr (get (get timeCourseVector 1) @i))))
+        (swap! i inc))
     (assoc timeCourseVector 1 @countArr)))
 
 
@@ -58,15 +55,32 @@
         [@grammar @grammarLearned (get @timeCourseVector 0) (get @timeCourseVector 1)]))
 
 
+(defn handle-request [sentences max_sentences]
+      (let [result (future (fn [] (doesChildLearnGrammar sentences max_sentences)))]
+        ; Do something else
+        (writeResults @result)))
+
+
+(defmacro enqueue
+   ([q concurrent-promise-name concurrent serialized]
+    `(let [~concurrent-promise-name (promise)]
+      (future (deliver ~concurrent-promise-name ~concurrent))
+       (deref ~q)
+      ~serialized
+      ~concurrent-promise-name))
+   ([concurrent-promise-name concurrent serialized]
+   `(enqueue (future) ~concurrent-promise-name ~concurrent ~serialized)))
+
+
 (defn runSimulation
   "max_eChildren number of eChildren will process 
   max_sentences number of sentences."
   [sentences max_eChildren max_sentences]
   (io/delete-file "out.csv" :silently true)
+  (loop [i 0 results []]
+    (if (< i max_eChildren)
+      (recur (inc i) (conj results (doesChildLearnGrammar sentences max_sentences)))
+      (writeResults results))))
 
-  (let [counter (atom 0)]
-    (while (< @counter max_eChildren)
-      (println "eChild #" (+ @counter 1))
-      (writeResults (doesChildLearnGrammar sentences max_sentences))
-      (swap! counter inc))))
-
+;(handle-request sentences max_sentences)
+;(-> (enqueue grammar (doesChildLearnGrammar sentences max_sentences) (writeResults @grammar)))
