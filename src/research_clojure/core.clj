@@ -1,6 +1,4 @@
 (ns research-clojure.core)
-;(require 'research-clojure.eChild.runSimulation)
-;(refer 'research-clojure.eChild.runSimulation)
 (load "runSimulation")
 (require '[clojure.data.csv :as csv])
 

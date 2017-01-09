@@ -1,6 +1,3 @@
-;(ns research-clojure.eChild.runSimulation)
-;(require 'research-clojure.eChild.Child)
-;(refer 'research-clojure.eChild.Child)
 (load "Child")
 (require '[clojure.string :as str]
          '[clojure.data.csv :as csv]

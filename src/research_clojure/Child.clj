@@ -1,4 +1,3 @@
-;(ns research-clojure.eChild.Child)
 (require ['clojure.string :as 'str])
 (require '[clojure.set :refer [union]])
 
