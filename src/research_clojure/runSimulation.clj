@@ -56,23 +56,6 @@
         [@grammar @grammarLearned (get @timeCourseVector 0) (get @timeCourseVector 1)]))
 
 
-(defn handle-request [sentences max_sentences]
-      (let [result (future (fn [] (doesChildLearnGrammar sentences max_sentences)))]
-        ; Do something else
-        (writeResults @result)))
-
-
-(defmacro enqueue
-   ([q concurrent-promise-name concurrent serialized]
-    `(let [~concurrent-promise-name (promise)]
-      (future (deliver ~concurrent-promise-name ~concurrent))
-       (deref ~q)
-      ~serialized
-      ~concurrent-promise-name))
-   ([concurrent-promise-name concurrent serialized]
-   `(enqueue (future) ~concurrent-promise-name ~concurrent ~serialized)))
-
-
 (defn runSimulation
   "max_eChildren number of eChildren will process 
   max_sentences number of sentences."
@@ -83,5 +66,4 @@
       (recur (inc i) (conj results (doesChildLearnGrammar sentences max_sentences)))
       (writeResults results))))
 
-;(handle-request sentences max_sentences)
 ;(-> (enqueue grammar (doesChildLearnGrammar sentences max_sentences) (writeResults @grammar)))
