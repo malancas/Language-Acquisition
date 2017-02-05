@@ -8,13 +8,13 @@
 (defn writeResults
   "Writes the results of each learner to an output file"
   [results]
-  (println results)
+  (println "Results: " results)
   (spit "out.csv" results))
 
 
 (defn updateTimeCourseVector
   "Updates the sentence number of any of
-  the 13 parameters (represented by oldGrammar) 
+  the 13 parameters (represented by oldGrammar)
   recorded in timeCourseVector if their coresponding
   value in grammar has changed after being
   processed by setParameters"
@@ -30,7 +30,7 @@
 
 
 (defn doesChildLearnGrammar
-  "Runs sentence consuming functions until the 
+  "Runs sentence consuming functions until the
   correct grammar is learned or the maximum number
   of sentences are processed. Needs infoList, grammar, expected grammar"
   [sentences max_num]
@@ -49,18 +49,38 @@
             (reset! grammarLearned (isGrammarLearned? grammar infoList1)))
           (swap! sentenceCount inc))
 
-        (println "Final grammar: " @grammar)
+        (println "Finished")
+        ;(writeResults @grammar)
         [@grammar @grammarLearned (get @timeCourseVector 0) (get @timeCourseVector 1)]))
 
 
 (defn runSimulation
-  "max_eChildren number of eChildren will process 
+  "max_eChildren number of eChildren will process
   max_sentences number of sentences."
   [sentences max_eChildren max_sentences]
   (io/delete-file "out.csv" :silently true)
-  (loop [i 0 results []]
-    (if (< i max_eChildren)
-      (recur (inc i) (conj results (doesChildLearnGrammar sentences max_sentences)))
-      (writeResults results))))
 
-;(-> (enqueue grammar (doesChildLearnGrammar sentences max_sentences) (writeResults @grammar)))
+  (let [results []]
+    (loop [i 0]
+      (when (< i max_eChildren)
+        (conj results (future (doesChildLearnGrammar sentences max_sentences)))
+        (recur (inc i))))    
+    (writeResults results))
+  (println "Finished simulation"))
+
+
+(comment
+working version
+(defn runSimulation
+  "max_eChildren number of eChildren will process
+  max_sentences number of sentences."
+  [sentences max_eChildren max_sentences]
+  (io/delete-file "out.csv" :silently true)
+
+  (loop [i 0]
+    (when (< i max_eChildren)
+      (future (doesChildLearnGrammar sentences max_sentences))
+      (recur (inc i))))
+  (println "Finished simulation"))
+
+)
