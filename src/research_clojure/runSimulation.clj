@@ -60,13 +60,13 @@
   [sentences max_eChildren max_sentences]
   (io/delete-file "out.csv" :silently true)
 
-  (let [results []]
-    (loop [i 0]
-      (when (< i max_eChildren)
-        (conj results (future (doesChildLearnGrammar sentences max_sentences)))
-        (recur (inc i))))    
-    (writeResults results))
-  (println "Finished simulation"))
+  (loop [i 0
+         results []]
+    (if (< i max_eChildren)
+      (do 
+        (recur (inc i) (conj results (future (doesChildLearnGrammar sentences max_sentences)))))
+      (do
+        (writeResults results) (println "Finished simulation")))))
 
 
 (comment
